@@ -3,7 +3,7 @@
   apt:
     name:
       - docker.io
-      - docker-compose-plugin  # v2 (Docker Compose plugin)
+      - docker-compose  # v2 (Docker Compose)
     state: present
     update_cache: true
 
