@@ -1,15 +1,26 @@
 ---
-- name: Install Docker + Compose plugin
+- name: Install Docker Engine
   apt:
     name:
       - docker.io
-      - docker-compose-plugin
+      - docker-compose-plugin  # v2 (Docker Compose plugin)
     state: present
     update_cache: true
+
+- name: Check if Docker Compose v2 is installed
+  command: docker-compose --version
+  register: compose_version
+  ignore_errors: true
+
+- name: Install Docker Compose v1 if v2 fails
+  shell: |
+    curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+  when: compose_version.failed
+  become: true
 
 - name: Ensure Docker service running
   service:
     name: docker
     state: started
     enabled: true
-
