@@ -1,3 +1,7 @@
+# Répertoires cibles sur la machine
+app_root: "/opt/babyfoot"
+data_dir: "/opt/babyfoot/data"     # contiendra babyfoot.db (sqlite)
+
 # Accès HTTP
 app_domain: "localhost"
 http_port: 80
@@ -7,10 +11,6 @@ backend_port: 8080
 frontend_image: "nginx:alpine"     # multi-arch (OK Raspberry)
 backend_build_context: "{{ app_root }}/backend"  # on build localement
 db_init_image: "alpine:3.20"       # pour initialiser sqlite
-
-# Répertoires cibles sur la machine
-app_root: "/opt/babyfoot"
-data_dir: "/opt/babyfoot/data"     # contiendra babyfoot.db (sqlite)
 
 # DB (sqlite)
 sqlite_db_path: "{{ data_dir }}/babyfoot.db"

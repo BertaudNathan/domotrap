@@ -1,30 +1,54 @@
 ---
-- name: Ensure app root exists
+- name: Ensure directories exist
   file:
-    path: "{{ app_root }}"
+    path: "{{ item }}"
     state: directory
     mode: "0755"
+  loop:
+    - "{{ app_root }}"
+    - "{{ data_dir }}"
+    - "{{ backup_dir }}"
+    - "{{ app_root }}/frontend"
+    - "{{ app_root }}/backend"
+    - "{{ app_root }}/db"
+
+- name: Copy frontend files (your HTML/CSS/JS)
+  copy:
+    src: "frontend/"
+    dest: "{{ app_root }}/frontend/"
+    mode: "0644"
+  notify: Restart frontend
+
+- name: Copy backend skeleton (can be overwritten later)
+  copy:
+    src: "backend/"
+    dest: "{{ app_root }}/backend/"
+    mode: "0644"
+  notify: Restart backend
+
+- name: Copy DB schema (sqlite)
+  copy:
+    src: "db/"
+    dest: "{{ app_root }}/db/"
+    mode: "0644"
+
+- name: Deploy nginx.conf
+  template:
+    src: "nginx.conf.j2"
+    dest: "{{ app_root }}/nginx.conf"
+    mode: "0644"
+  notify: Restart frontend
 
 - name: Deploy docker-compose.yml
   template:
     src: "docker-compose.yml.j2"
     dest: "{{ app_root }}/docker-compose.yml"
+    mode: "0644"
 
-- name: Detect docker compose v2 (docker compose)
-  shell: |
-    if docker compose version >/dev/null 2>&1; then
-      echo yes
-    else
-      echo no
-    fi
-  register: compose_v2
-  changed_when: false
-
-- name: Bring up stack with docker compose v2
-  shell: docker compose -f {{ app_root }}/docker-compose.yml up -d --build
-  when: compose_v2.stdout == "yes"
-
-- name: Bring up stack with docker-compose v1
-  shell: docker-compose -f {{ app_root }}/docker-compose.yml up -d --build
-  when: compose_v2.stdout != "yes"
+- name: Start stack (build backend)
+  community.docker.docker_compose_v2:
+    project_src: "{{ app_root }}"
+    state: present
+    build: always
+    pull: missing
 
