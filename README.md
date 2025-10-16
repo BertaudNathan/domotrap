@@ -32,7 +32,9 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 - Dev' FullStack 3 : Mamie Melissa
 - Cloud & Infrastructure 1 : NOM Prénom
 - Cloud & Infrastructure 2 : NOM Prénom
-- IA & Data 1 : NOM Prénom
+- 
+- IA & Data 1 : FOURNET Charly
+- IA & Data 1 : RAVEL Arthur
 - IoT/Mobile / Systèmes Embarqués 1 : Bertaud Nathan
 - IoT/Mobile / Systèmes Embarqués 1 : Reungoat Nathan
 > Préciser qui est le porte parole de l'équipe, c'est lui qui répondra aux questions si nécessaire.
