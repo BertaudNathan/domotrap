@@ -3,20 +3,13 @@
   apt:
     name:
       - docker.io
-      - docker-compose  # v2 (Docker Compose)
     state: present
     update_cache: true
 
-- name: Check if Docker Compose v2 is installed
-  command: docker-compose --version
-  register: compose_version
-  ignore_errors: true
-
-- name: Install Docker Compose v1 if v2 fails
+- name: Install Docker Compose v2
   shell: |
-    curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    curl -L "https://github.com/docker/compose/releases/download/2.18.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
-  when: compose_version.failed
   become: true
 
 - name: Ensure Docker service running
