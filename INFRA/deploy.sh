@@ -10,7 +10,8 @@ echo "🚀 Déploiement du Babyfoot connecté sur cette machine..."
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-apt-get install -y ansible git python3-pip ufw
+apt-get install -y git python3-pip ufw
+pipninstall --upgrade ansible
 
 ansible-galaxy collection install -r requirements.yml
 
