@@ -30,9 +30,8 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 - Dev' FullStack 1 : Breton Swan
 - Dev' FullStack 2 : Douville Léo
 - Dev' FullStack 3 : Mamie Melissa
-- Cloud & Infrastructure 1 : NOM Prénom
-- Cloud & Infrastructure 2 : NOM Prénom
-- 
+- Cloud & Infrastructure 1 : ARROUD Rayan
+- Cloud & Infrastructure 2 : MOUMINE Wassim
 - IA & Data 1 : FOURNET Charly
 - IA & Data 1 : RAVEL Arthur
 - IoT/Mobile / Systèmes Embarqués 1 : Bertaud Nathan
