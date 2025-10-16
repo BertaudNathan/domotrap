@@ -39,6 +39,7 @@ CREATE TABLE player (
     player_id INTEGER PRIMARY KEY,
     player_pseudo TEXT NOT NULL UNIQUE,
     player_name TEXT NOT NULL UNIQUE,
+    player_password TEXT NOT NULL UNIQUE,
     player_birthday DATE
 );
 
