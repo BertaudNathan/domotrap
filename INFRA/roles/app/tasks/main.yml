@@ -1,0 +1,30 @@
+---
+- name: Ensure app root exists
+  file:
+    path: "{{ app_root }}"
+    state: directory
+    mode: "0755"
+
+- name: Deploy docker-compose.yml
+  template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ app_root }}/docker-compose.yml"
+
+- name: Detect docker compose v2 (docker compose)
+  shell: |
+    if docker compose version >/dev/null 2>&1; then
+      echo yes
+    else
+      echo no
+    fi
+  register: compose_v2
+  changed_when: false
+
+- name: Bring up stack with docker compose v2
+  shell: docker compose -f {{ app_root }}/docker-compose.yml up -d --build
+  when: compose_v2.stdout == "yes"
+
+- name: Bring up stack with docker-compose v1
+  shell: docker-compose -f {{ app_root }}/docker-compose.yml up -d --build
+  when: compose_v2.stdout != "yes"
+

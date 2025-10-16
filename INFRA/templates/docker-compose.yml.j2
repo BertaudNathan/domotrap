@@ -1,0 +1,30 @@
+version: "3.3"
+services:
+  frontend:
+    image: {{ frontend_image }}
+    container_name: {{ compose_project_name }}-frontend
+    ports:
+      - "{{ http_port }}:80"
+    restart: unless-stopped
+
+  backend:
+    image: {{ backend_image }}
+    container_name: {{ compose_project_name }}-backend
+    ports:
+      - "{{ backend_port }}:80"
+    restart: unless-stopped
+
+  db:
+    image: {{ db_image }}
+    container_name: {{ compose_project_name }}-db
+    environment:
+      POSTGRES_USER: {{ db_user }}
+      POSTGRES_PASSWORD: {{ db_password }}
+      POSTGRES_DB: {{ db_name }}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  db_data:
+

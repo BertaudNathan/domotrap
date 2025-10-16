@@ -1,0 +1,24 @@
+---
+- name: Install Docker Engine
+  apt:
+    name:
+      - docker.io
+      - python3-pip
+    state: present
+    update_cache: true
+
+- name: Install docker-compose manually if missing
+  shell: |
+    if ! command -v docker-compose >/dev/null 2>&1; then
+      pip install docker-compose
+    fi
+  args:
+    warn: false
+
+
+- name: Enable Docker service
+  service:
+    name: docker
+    state: started
+    enabled: true
+

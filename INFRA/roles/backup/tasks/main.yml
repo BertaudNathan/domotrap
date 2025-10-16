@@ -1,0 +1,13 @@
+---
+- name: Create backup folder
+  file:
+    path: "{{ app_root }}/backups"
+    state: directory
+
+- name: Setup daily DB backup (2:30)
+  cron:
+    name: "Backup Babyfoot DB"
+    minute: "30"
+    hour: "2"
+    job: "docker exec {{ compose_project_name }}-db pg_dump -U {{ db_user }} {{ db_name }} > {{ app_root }}/backups/$(date +\\%F_\\%H%M).sql"
+
