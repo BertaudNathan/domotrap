@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <header id="navbar" class="nav">
+        <nav>
+            <div class="nav-logo">Domotrap</div>
+            <ul>
+                <li class="nav-item is-active"><a href="index.html">Home</a></li> 
+                <li class="nav-item"><a href="index.html#ranking">Ranking</a></li>
+                <li class="nav-item"><a href="connexion.html">Connexion</a></li> 
+                <li class="nav-item"><a href="inscription.html" class="inscription-btn">Inscription</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="inscription">
+        <h1>Create account</h1>
+         <p class="subtitle">Join the Domotrap community and enter the rankings !</p>
+
+        <form id="inscription-form" action="https://api.com/api/inscription" method="POST">
+            <div class="group-form">
+                <label id="pseudo">Pseudo</label>
+                <input type="text" name="pseudo" id="pseudo" required>
+            </div>
+            <div class="group-form">
+                <label id="name">Name</label>
+                <input type="text" name="name" id="name" required>
+            </div>
+            <div class="group-form">
+                <label id="birth">Birthday</label>
+                <input type="date" name="birth" id="birth" required>
+            </div>
+            <div class="group-form">
+                <label id="pwd">Password</label>
+                <input type="password" name="pwd" id="pwd" required>
+            </div>
+            <div class="group-form">
+                <label id="confirm-pwd">Confirm password</label>
+                <input type="password" name="confirm-pwd" id="confirm-pwd" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Create an account</button>
+
+            <p class="redirect">
+                Already have an account ? <a href="connexion.html">Log in here.</a>.
+            </p>
+        </form>
+       
+    </section>
+
+
+    <footer>
+        <div class="footer-content">
+            <p>© Hackathon Ynov 2025</p>
+            <p><a href="#Contact">Contact us</a></p>
+        </div>
+    </footer>
+</body>
+</html>
