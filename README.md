@@ -27,9 +27,9 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 
 ## Equipe
 
-- Dev' FullStack 1 : NOM Prénom
-- Dev' FullStack 2 : NOM Prénom
-- Dev' FullStack 3 : NOM Prénom
+- Dev' FullStack 1 : Breton Swan
+- Dev' FullStack 2 : Douville Léo
+- Dev' FullStack 3 : Mamie Melissa
 - Cloud & Infrastructure 1 : NOM Prénom
 - Cloud & Infrastructure 2 : NOM Prénom
 - IA & Data 1 : NOM Prénom
