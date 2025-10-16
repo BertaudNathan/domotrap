@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <script src="../assets/script.js" defer></script>
+</head>
+<body>
+    <header id="navbar" class="nav">
+        <nav>
+            <div class="nav-logo">Domotrap</div>
+            <ul>
+                <li class="nav-item is-active"><a href="index.html">Home</a></li> 
+                <li class="nav-item"><a href="index.html#ranking">Ranking</a></li>
+                <li class="nav-item"><a href="connexion.html">Connexion</a></li> 
+                <li class="nav-item"><a href="inscription.html" class="inscription-btn">Inscription</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="inscription">
+        <h1>Create account</h1>
+         <p class="subtitle">Join the Domotrap community and enter the rankings !</p>
+
+ <form id="inscription-form" action="http://localhost:8000/register" method="POST">
+    <div class="group-form">
+        <label for="player_pseudo">Pseudo</label>
+        <input type="text" name="player_pseudo" id="player_pseudo" required>
+    </div>
+    <div class="group-form">
+        <label for="player_name">Name</label>
+        <input type="text" name="player_name" id="player_name" required>
+    </div>
+    <div class="group-form">
+        <label for="player_birthday">Birthday</label>
+        <input type="date" name="player_birthday" id="player_birthday" required>
+    </div>
+    <div class="group-form">
+        <label for="player_password">Password</label>
+        <input type="password" name="player_password" id="player_password" required>
+    </div>
+    <div class="group-form">
+        <label for="confirm_password">Confirm password</label>
+        <input type="password" name="confirm_password" id="confirm_password" required>
+    </div>
+
+    <button type="submit" class="btn-submit">Create an account</button>
+</form>
+
+       
+    </section>
+
+
+    <footer>
+        <div class="footer-content">
+            <p>© Hackathon Ynov 2025</p>
+            <p><a href="#Contact">Contact us</a></p>
+        </div>
+    </footer>
+</body>
+</html>

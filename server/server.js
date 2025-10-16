@@ -1,12 +1,15 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import sqlite3 from "sqlite3";
+import cors from "cors";
 const app = express();
 const port = process.env.PORT || 8000;
 
 app.use(express.json());
 
-const db = new sqlite3.Database("./babyfoot.sqlite");
+app.use(cors());
+
+const db = new sqlite3.Database("./ma_base.db");
 
 //route pour la connexion
 app.post("/login", (req, res) => {
@@ -16,6 +19,7 @@ app.post("/login", (req, res) => {
 
   db.get(sql, [player_name], async (err, user) => {
     if (err) {
+      console.log(err);
       return res
         .status(500)
         .json({ message: "Erreur base de données", error: err.message });
@@ -39,6 +43,7 @@ app.post("/login", (req, res) => {
 
 // Route d'inscription
 app.post("/register", async (req, res) => {
+  console.log(req.body);
   const { player_pseudo, player_name, player_password, player_birthday } =
     req.body;
   if (!player_pseudo || !player_name || !player_password) {
