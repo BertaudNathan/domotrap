@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard · Connexion</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="container">
+    <form class="login" method="post" action="/auth/login">
+      <h1>Connexion admin</h1>
+
+      <div class="mt-2">
+        <label for="email">Email</label><br/>
+        <input id="email" name="email" type="email" class="input" placeholder="superadmin@ynov.fr" required />
+      </div>
+
+      <div class="mt-2">
+        <label for="password">Mot de passe</label><br/>
+        <input id="password" name="password" type="password" class="input" placeholder="••••••••" required />
+      </div>
+
+      <div class="mt-4">
+        <button class="btn" type="submit">Se connecter</button>
+      </div>
+
+      <p id="err" class="error hide">Identifiants invalides.</p>
+      <p class="mt-2" style="color:var(--c-muted); font-size:12px">Démo: superadmin@ynov.fr / super123</p>
+    </form>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    if (params.get('error') === '1') {
+      document.getElementById('err').classList.remove('hide');
+    }
+  </script>
+</body>
+</html>

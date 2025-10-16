@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard · Utilisateurs</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <a href="/admin/"><strong>Dashboard</strong></a>
+    <a href="/admin/babyfoots.html">Babyfoots</a>
+    <a href="/admin/users.html">Utilisateurs</a>
+    <form class="inline" style="margin-left:auto" method="post" action="/auth/logout">
+      <button class="btn btn--ghost">Déconnexion</button>
+    </form>
+  </nav>
+
+  <main class="container">
+    <h1>Utilisateurs</h1>
+
+    <form class="form-row" onsubmit="return applyFilter(event)">
+      <input id="q" class="input" placeholder="Recherche nom/email…" />
+      <select id="role" class="select">
+        <option value="">Tous rôles</option>
+        <option>ADMIN</option>
+        <option>STUDENT</option>
+        <!-- SUPERADMIN sera ajouté si connecté en superadmin -->
+      </select>
+      <button class="btn">Filtrer</button>
+    </form>
+
+    <table class="table mt-4">
+      <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Actif</th><th class="table__actions">Actions</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+
+  <!-- ✅ MODALE DE CONFIRMATION -->
+  <div id="confirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-hidden="true">
+    <div class="modal__backdrop" onclick="closeModal()"></div>
+    <div class="modal__dialog">
+      <div class="modal__title" id="confirmTitle">Confirmer la suppression</div>
+      <div class="modal__desc" id="confirmDesc">Voulez-vous vraiment supprimer cet utilisateur ?</div>
+      <div class="modal__actions">
+        <button class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+        <button class="btn btn--down" id="confirmBtn">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let current = { q:"", role:"", page:1 };
+    let me = null;
+    let pendingAction = null;
+
+    async function bootstrap(){
+      const meRes = await fetch('/auth/me');
+      me = await meRes.json();
+
+      if (me.role === 'SUPERADMIN') {
+        const roleSel = document.getElementById('role');
+        const opt = document.createElement('option');
+        opt.textContent = 'SUPERADMIN';
+        roleSel.appendChild(opt);
+      }
+      load();
+    }
+
+    async function load(){
+      const params = new URLSearchParams(current).toString();
+      const res = await fetch('/mock/users?' + params);
+      const data = await res.json();
+      document.getElementById('rows').innerHTML = data.items.map(u => row(u)).join('');
+    }
+
+    function row(u){
+      const isTargetSuper = u.role === 'SUPERADMIN';
+      const isTargetAdmin  = u.role === 'ADMIN';
+      const iAmSuper = me.role === 'SUPERADMIN';
+
+      const canEdit = !isTargetSuper && (iAmSuper || !isTargetAdmin);
+      const disabled = canEdit ? '' : 'disabled';
+      const lock = canEdit ? '' : ' 🔒';
+
+      const roleOptions = iAmSuper
+        ? `
+            <option ${u.role==='STUDENT'?'selected':''}>STUDENT</option>
+            <option ${u.role==='ADMIN'?'selected':''}>ADMIN</option>
+            <option ${u.role==='SUPERADMIN'?'selected':''}>SUPERADMIN</option>
+          `
+        : `
+            <option ${u.role==='STUDENT'?'selected':''}>STUDENT</option>
+            <option ${u.role==='ADMIN'?'selected':''}>ADMIN</option>
+          `;
+
+      return `
+        <tr>
+          <td>${escapeHtml(u.displayName)}${lock}</td>
+          <td>${escapeHtml(u.email)}</td>
+          <td>
+            <select class="select" onchange="updateUser('${u.id}', { role: this.value })" ${disabled}>
+              ${roleOptions}
+            </select>
+          </td>
+          <td>${u.active ? '✅' : '❌'}</td>
+          <td class="table__actions">
+            <button class="btn" onclick="updateUser('${u.id}', { active: ${!u.active} })" ${disabled}>
+              ${u.active?'Désactiver':'Activer'}
+            </button>
+            <button class="btn btn--danger" onclick="askDelete('${u.id}', '${escapeHtml(u.displayName)}')" ${disabled}>Supprimer</button>
+          </td>
+        </tr>
+      `;
+    }
+
+    async function updateUser(id, payload){
+      const r = await fetch('/mock/users/' + id, {
+        method: 'PATCH',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      if (r.status === 403) {
+        const msg = (await r.json()).error || 'Action non autorisée';
+        alert(msg);
+      }
+      load();
+    }
+
+    // ==== Modale de confirmation ====
+    function askDelete(id, name){
+      const title = document.getElementById('confirmTitle');
+      const desc = document.getElementById('confirmDesc');
+      title.textContent = 'Supprimer « ' + name + ' » ?';
+      desc.textContent = 'Cette action est définitive. Vous ne pourrez pas annuler.';
+      pendingAction = async () => {
+        const r = await fetch('/mock/users/' + id, { method: 'DELETE' });
+        if (r.status === 403) {
+          const msg = (await r.json()).error || 'Action non autorisée';
+          alert(msg);
+        }
+        closeModal();
+        load();
+      };
+      openModal();
+    }
+
+    function openModal() {
+      const modal = document.getElementById('confirmModal');
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.getElementById('confirmBtn').onclick = () => { pendingAction && pendingAction(); };
+    }
+    function closeModal() {
+      const modal = document.getElementById('confirmModal');
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      pendingAction = null;
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    function applyFilter(e){
+      e.preventDefault();
+      current.q = document.getElementById('q').value;
+      current.role = document.getElementById('role').value;
+      current.page = 1;
+      load();
+      return false;
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    bootstrap();
+  </script>
+</body>
+</html>
