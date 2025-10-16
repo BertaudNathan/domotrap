@@ -33,10 +33,10 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 - Cloud & Infrastructure 1 : NOM Prénom
 - Cloud & Infrastructure 2 : NOM Prénom
 - IA & Data 1 : NOM Prénom
-- IoT/Mobile / Systèmes Embarqués 1 : NOM Prénom
-
+- IoT/Mobile / Systèmes Embarqués 1 : Bertaud Nathan
+- IoT/Mobile / Systèmes Embarqués 1 : Reungoat Nathan
 > Préciser qui est le porte parole de l'équipe, c'est lui qui répondra aux questions si nécessaire.
-
+- Reungoat Nathan
 ## Table des matières
 
 - [Contexte](#contexte)
