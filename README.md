@@ -61,6 +61,7 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 > - IOT : C++, platformIO
 > - Frontend : HTML, CSS, js
 > - Backend : express.js, js
+> - INFRA : Ansible, NGINX, Docker, Docker-compose, Shell
 
 ## Architecture
 
