@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard · Overview</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <a href="/admin/"><strong>Dashboard</strong></a>
+    <a href="/admin/babyfoots.html">Babyfoots</a>
+    <a href="/admin/users.html">Utilisateurs</a>
+    <form class="inline" style="margin-left:auto" method="post" action="/auth/logout">
+      <button class="btn btn--ghost">Déconnexion</button>
+    </form>
+  </nav>
+
+  <main class="container">
+    <h1>Hackathon — Dashboard</h1>
+    <section id="stats" class="grid-4"></section>
+
+    <section class="mt-4">
+      <h2>Heures de pointe</h2>
+      <p id="peaks">—</p>
+    </section>
+  </main>
+
+  <script>
+    async function loadOverview(){
+      const res = await fetch('/mock/stats/overview');
+      const s = await res.json();
+      const stats = document.getElementById('stats');
+      stats.innerHTML = `
+        ${card('Tables', s.totalTables)}
+        ${card('Actives', s.active)}
+        ${card('HS', s.down)}
+        ${card('Occupation', Math.round(s.occupancyRate*100)+'%')}
+      `;
+      document.getElementById('peaks').textContent = (s.peakHours||[]).join(', ');
+    }
+    const card = (label, value) => `
+      <div class="card">
+        <div class="card__label">${label}</div>
+        <div class="card__kpi">${value}</div>
+      </div>
+    `;
+    loadOverview();
+  </script>
+</body>
+</html>

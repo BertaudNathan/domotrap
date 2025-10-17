@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard · Babyfoots</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <a href="/admin/"><strong>Dashboard</strong></a>
+    <a href="/admin/babyfoots.html">Babyfoots</a>
+    <a href="/admin/users.html">Utilisateurs</a>
+    <form class="inline" style="margin-left:auto" method="post" action="/auth/logout">
+      <button class="btn btn--ghost">Déconnexion</button>
+    </form>
+  </nav>
+
+  <main class="container">
+    <div class="header">
+      <h1>Babyfoots</h1>
+      <!-- ✅ champ Firmware retiré -->
+      <form id="createForm" class="form-row" onsubmit="return createBabyfoot(event)">
+        <input required name="name" class="input" placeholder="Nom (ex. Table A)" />
+        <input required name="location" class="input" placeholder="Localisation (Souk – zone A)" />
+        <select name="status" class="select">
+          <option>OK</option><option>BUSY</option><option>DOWN</option>
+        </select>
+        <button class="btn">Créer</button>
+      </form>
+    </div>
+
+    <form class="form-row" onsubmit="return applyFilter(event)">
+      <input id="q" name="q" class="input" placeholder="Recherche…" />
+      <select id="status" name="status" class="select">
+        <option value="">Tous</option>
+        <option value="OK">OK</option>
+        <option value="BUSY">Occupé</option>
+        <option value="DOWN">HS</option>
+      </select>
+      <button type="submit" class="btn">Filtrer</button>
+    </form>
+
+    <table class="table mt-4">
+      <thead>
+        <tr><th>Nom</th><th>Lieu</th><th>État</th><th>Dernière activité</th><th class="table__actions">Actions</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+
+  <!-- Modale de confirmation -->
+  <div id="confirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-hidden="true">
+    <div class="modal__backdrop" onclick="closeModal()"></div>
+    <div class="modal__dialog">
+      <div class="modal__title" id="confirmTitle">Confirmer la suppression</div>
+      <div class="modal__desc" id="confirmDesc">Voulez-vous vraiment supprimer cet élément ?</div>
+      <div class="modal__actions">
+        <button class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+        <button class="btn btn--down" id="confirmBtn">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let current = { q: "", status: "", page: 1 };
+    let pendingAction = null;
+
+    async function load() {
+      const params = new URLSearchParams(current).toString();
+      const res = await fetch('/mock/babyfoots?' + params);
+      const data = await res.json();
+      const tbody = document.getElementById('rows');
+      tbody.innerHTML = data.items.map((b) => row(b)).join('');
+    }
+
+    function row(b) {
+      const badge =
+        b.status === 'OK'   ? 'badge--ok' :
+        b.status === 'BUSY' ? 'badge--busy' : 'badge--down';
+      const last = b.lastActiveAt ? new Date(b.lastActiveAt).toLocaleString('fr-FR') : '—';
+      return `
+        <tr>
+          <td><a href="/admin/tables/${encodeURIComponent(b.id)}">${escapeHtml(b.name)}</a></td>
+          <td>${escapeHtml(b.location)}</td>
+          <td><span class="badge ${badge}">${b.status}</span></td>
+          <td>${last}</td>
+          <td class="table__actions">
+            <button class="btn btn--danger" onclick="askDelete('${b.id}', '${escapeHtml(b.name)}')">Supprimer</button>
+          </td>
+        </tr>
+      `;
+    }
+
+    async function toggleHS(id, status) {
+      const next = status === 'DOWN' ? 'OK' : 'DOWN';
+      await fetch('/mock/babyfoots/' + id, {
+        method: 'PATCH',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ status: next })
+      });
+      load();
+    }
+
+    // Modale
+    function askDelete(id, name) {
+      const title = document.getElementById('confirmTitle');
+      const desc = document.getElementById('confirmDesc');
+      title.textContent = 'Supprimer « ' + name + ' » ?';
+      desc.textContent = 'Cette action est définitive. Vous ne pourrez pas annuler.';
+      pendingAction = async () => {
+        await fetch('/mock/babyfoots/' + id, { method: 'DELETE' });
+        closeModal();
+        load();
+      };
+      openModal();
+    }
+    function openModal() {
+      const modal = document.getElementById('confirmModal');
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      const btn = document.getElementById('confirmBtn');
+      btn.onclick = () => { pendingAction && pendingAction(); };
+    }
+    function closeModal() {
+      const modal = document.getElementById('confirmModal');
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      pendingAction = null;
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    function applyFilter(e) {
+      e.preventDefault();
+      current.q = document.getElementById('q').value;
+      current.status = document.getElementById('status').value;
+      current.page = 1;
+      load();
+      return false;
+    }
+
+    async function createBabyfoot(e) {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const payload = Object.fromEntries(fd.entries()); // name, location, status
+      await fetch('/mock/babyfoots', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify(payload)
+      });
+      e.target.reset();
+      load();
+      return false;
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    load();
+  </script>
+</body>
+</html>
