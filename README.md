@@ -140,8 +140,12 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 >    ```bash
 >    sudo ./deploy.sh
 >    ```
+>    
+>    Après cela vous devriez avoir les dépendances qui s'installent et le playbook qui se lance avec toutes les tâches (TASK) : 
+
+
 > 
-> 3. **Explication du script `deploy.sh`** :
+> 4. **Explication du script `deploy.sh`** :
 > 
 >    Voici ce que fait le script `deploy.sh` en détails :
 >    - **Installation de Docker et Docker Compose** : Le script utilise un playbook **Ansible** pour installer Docker et Docker Compose.
@@ -151,7 +155,7 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 >      - Il démarre les services en arrière-plan.
 >    - **Serveur accessible via localhost** : Une fois le déploiement terminé, l'application sera accessible via **localhost** dans votre navigateur.
 > 
-> 4. **Vérifiez le bon fonctionnement du déploiement** :
+> 5. **Vérifiez le bon fonctionnement du déploiement** :
 > 
 >    Après avoir lancé le script, l'application devrait être accessible via **localhost** sur votre machine. Ouvrez un navigateur et accédez à :
 > 
