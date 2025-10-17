@@ -52,18 +52,6 @@
   gap: 30px;
 }
 
-/* Carte de match live */
-.live-match-card {
-  background: white;
-  border-radius: 20px;
-  padding: 25px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  border: 3px solid #ff4444;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
 .live-match-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
