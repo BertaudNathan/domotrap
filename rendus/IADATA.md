@@ -52,12 +52,12 @@ Pour cela, nous avons créé une base SQLite permissive, pensée pour accepter c
 Une image Docker a été mise en place pour tester l’envoi et la persistance de ces anciennes données, tout en validant la communication entre la base et les outils d’analyse.
 Cette étape servait avant tout de proof of concept pour vérifier la faisabilité du pipeline complet et la stabilité du stockage.
 
-Le code lié à l’insertion et au déploiement Docker est disponible dans le dossier : `rendus/data/babyfoot_docker`
+Le code lié à l’insertion et au déploiement Docker est disponible dans [ce dossier](../rendus/data/babyfoot_docker)
 
 
 ## Mise en place de la BD
 
-En parallèle, nous avons mis en place une base de données robuste. Toutes les spécifications et la documentation se trouvent dans le fichier [../db_sql/documentation.md](db_sql/documentation.md).
+En parallèle, nous avons mis en place une base de données robuste. Toutes les spécifications et la documentation se trouvent dans le fichier [db_sql/documentation.md](../db_sql/documentation.md).
 Niveau technologie nous nous sommes tournés aussi sur SQLite pour la légereté du SGBD qui tournera sur le raspberry avec les spécifications données par l'équipe infra et la connaissance SQL du groupe entier, surtout de la part des dévs.
 
 
