@@ -1,0 +1,257 @@
+.live-section {
+  padding: 100px 20px 80px;
+  background: linear-gradient(135deg, #f5f8f9, #e8f4f8);
+  min-height: 100vh;
+}
+
+.live-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.live-header h1 {
+  color: #087487;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.live-indicator {
+  width: 15px;
+  height: 15px;
+  background-color: #ff4444;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+.live-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.matches-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 30px;
+}
+
+.live-match-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Badge LIVE */
+.live-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #ff4444;
+  color: white;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-badge::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* En-tête du match */
+.match-info {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.table-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #087487;
+  margin-bottom: 8px;
+}
+
+.match-timer {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  font-family: "Courier New", monospace;
+  letter-spacing: 2px;
+}
+
+/* Équipes et scores */
+.teams-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 25px 0;
+}
+
+.team {
+  flex: 1;
+  text-align: center;
+}
+
+.team-label {
+  font-size: 0.85rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.team-red .team-label {
+  color: #e74c3c;
+}
+
+.team-blue .team-label {
+  color: #3498db;
+}
+
+.team-players {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.player-tag {
+  background: linear-gradient(135deg, #ffe0b2, #ffcc80);
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.team-red .player-tag {
+  background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+}
+
+.team-blue .player-tag {
+  background: linear-gradient(135deg, #bbdefb, #90caf9);
+}
+
+/* Score */
+.score-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+.score-numbers {
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: #087487;
+  line-height: 1;
+}
+
+.score-vs {
+  font-size: 1rem;
+  color: #aaa;
+  margin: 5px 0;
+}
+
+/* État vide */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666;
+}
+
+.empty-state img {
+  width: 200px;
+  opacity: 0.5;
+  margin-bottom: 20px;
+}
+
+.empty-state h2 {
+  color: #087487;
+  margin-bottom: 10px;
+}
+
+/* Bouton rafraîchir */
+.refresh-btn {
+  background: linear-gradient(to right, #7afec9, #27cced);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 20px auto;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(39, 204, 237, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .matches-container {
+    grid-template-columns: 1fr;
+  }
+
+  .score-numbers {
+    font-size: 2.5rem;
+  }
+}
+
+#liveMatchesContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh; /* ou 100vh */
+  padding: 20px;
+}
+
+.live-match-card {
+  max-width: 500px; /* par ex */
+  width: 100%;
+  margin: auto; /* centre horizontalement si pas flexbox */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+}
