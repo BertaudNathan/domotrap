@@ -270,9 +270,7 @@ app.get("/match/:id", (req, res) => {
   });
 });
 
-//ajouter un match
 app.post("/match", (req, res) => {
-  console.log(req.body);
   const {
     match_date,
     Id_babyfoot_table,
@@ -287,43 +285,68 @@ app.post("/match", (req, res) => {
     return res.status(400).json({ message: "Champs obligatoires manquants" });
   }
 
-  const sql = `
-    INSERT INTO match_ (
-      match_date,
-      match_duration,
-      match_final_score_red,
-      match_final_score_blue,
-      match_winner,
-      match_rating,
-      Id_babyfoot_table
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+  // 🧠 Étape 1 : Vérifie si un match en cours existe déjà sur cette table
+  const checkSql = `
+    SELECT * FROM match_
+    WHERE Id_babyfoot_table = ? AND match_winner IS NULL
   `;
 
-  db.run(
-    sql,
-    [
-      match_date,
-      match_duration,
-      match_final_score_red,
-      match_final_score_blue,
-      match_winner,
-      match_rating,
-      Id_babyfoot_table,
-    ],
-    function (err) {
-      if (err) {
-        return res.status(500).json({
-          message: "Erreur lors de la création du match",
-          error: err.message,
-        });
-      }
+  db.get(checkSql, [Id_babyfoot_table], (err, existingMatch) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Erreur de vérification", error: err.message });
+    }
 
-      res.status(201).json({
-        message: "Match créé avec succès",
-        matchId: this.lastID,
+    if (existingMatch) {
+      // ✅ Match déjà existant : on ne crée rien de nouveau
+      return res.status(200).json({
+        message: "Un match est déjà en cours sur cette table",
+        matchId: existingMatch.Id_match,
+        existing: true,
       });
     }
-  );
+
+    // 🧱 Étape 2 : Insérer le nouveau match
+    const insertSql = `
+      INSERT INTO match_ (
+        match_date,
+        match_duration,
+        match_final_score_red,
+        match_final_score_blue,
+        match_winner,
+        match_rating,
+        Id_babyfoot_table
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.run(
+      insertSql,
+      [
+        match_date,
+        match_duration,
+        match_final_score_red,
+        match_final_score_blue,
+        match_winner,
+        match_rating,
+        Id_babyfoot_table,
+      ],
+      function (err) {
+        if (err) {
+          return res.status(500).json({
+            message: "Erreur lors de la création du match",
+            error: err.message,
+          });
+        }
+
+        res.status(201).json({
+          message: "Match créé avec succès",
+          matchId: this.lastID,
+          existing: false,
+        });
+      }
+    );
+  });
 });
 
 //modifier un match
@@ -744,4 +767,77 @@ app.get("/match/:id/players", (req, res) => {
 
 app.listen(port, () => {
   console.log("Server app listening on port " + port);
+});
+
+app.post("/goal", (req, res) => {
+  const { Id_match, player_id } = req.body;
+
+  // Vérification des champs requis
+  if (!Id_match || !player_id) {
+    return res
+      .status(400)
+      .json({ message: "Id_match et player_id sont requis" });
+  }
+
+  // Étape 1 : Récupérer la team_color du joueur
+  const getTeamSql = `
+    SELECT team_color FROM play
+    WHERE Id_match = ? AND player_id = ?
+    LIMIT 1
+  `;
+
+  db.get(getTeamSql, [Id_match, player_id], (err, row) => {
+    if (err) {
+      return res.status(500).json({ message: "Erreur DB", error: err.message });
+    }
+
+    if (!row) {
+      return res
+        .status(404)
+        .json({ message: "Joueur non trouvé dans ce match" });
+    }
+
+    const teamColor = row.team_color;
+
+    // Déterminer quelle colonne incrémenter
+    const column =
+      teamColor === "red"
+        ? "match_final_score_red"
+        : teamColor === "blue"
+        ? "match_final_score_blue"
+        : null;
+
+    if (!column) {
+      return res.status(400).json({ message: "Team color invalide" });
+    }
+
+    // Étape 2 : Incrémenter le score de la bonne équipe
+    const updateScoreSql = `
+      UPDATE match_
+      SET ${column} = ${column} + 1
+      WHERE Id_match = ?
+    `;
+
+    db.run(updateScoreSql, [Id_match], function (err) {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "Erreur mise à jour du score", error: err.message });
+      }
+
+      return res.status(200).json({
+        message: `But ajouté pour l'équipe ${teamColor}`,
+        team_color: teamColor,
+      });
+    });
+  });
+});
+
+app.get("/match/:id", (req, res) => {
+  const matchId = req.params.id;
+  db.get("SELECT * FROM match_ WHERE Id_match = ?", [matchId], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ message: "Match non trouvé" });
+    res.json(row);
+  });
 });
