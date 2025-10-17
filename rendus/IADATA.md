@@ -61,16 +61,24 @@ Standardisation des champs logiques, comme la conversion de is_substitute en boo
 
 
 ## Analyse
----> Charly
+Cette partie concernait principalement l’analyse et la remise en forme de l’ancienne data afin de la rendre exploitable dans un environnement unifié.
+L’objectif était de comprendre les incohérences présentes dans les anciens fichiers (formats de scores variés, valeurs manquantes, dates incohérentes, doublons, etc.) et d’assurer leur compatibilité avec le nouveau système de collecte.
+
+Pour cela, nous avons créé une base SQLite permissive, pensée pour accepter ces données historiques sans perte d’information.
+Une image Docker a été mise en place pour tester l’envoi et la persistance de ces anciennes données, tout en validant la communication entre la base et les outils d’analyse.
+Cette étape servait avant tout de proof of concept pour vérifier la faisabilité du pipeline complet et la stabilité du stockage.
 
 ## Mise en place de la BD
 
-Suite à notre analyse des données, nous avons mis en place une base de données robuste. Toutes les spécifications et la documentation se trouvent dans le fichier [db_sql/documentation.md](db_sql/documentation.md).
-Niveau technologie nous nous sommes tournés vers SQLite pour la légereté du SGBD qui tournera sur le raspberry avec les spécifications données par l'équipe infra et la connaissance SQL du groupe entier, surtout de la part des dévs.
+En parallèle, nous avons mis en place une base de données robuste. Toutes les spécifications et la documentation se trouvent dans le fichier [db_sql/documentation.md](db_sql/documentation.md).
+Niveau technologie nous nous sommes tournés aussi sur SQLite pour la légereté du SGBD qui tournera sur le raspberry avec les spécifications données par l'équipe infra et la connaissance SQL du groupe entier, surtout de la part des dévs.
+
 
 ## Power BI
 
----> charly
+Lors de la connexion à Power BI, nous avons rencontré un problème d’incompatibilité directe avec SQLite, car Power BI ne prend pas en charge ce moteur nativement.
+La solution a été d’installer manuellement le driver ODBC SQLite, permettant ainsi de créer une passerelle entre Power BI et la base locale.
+Grâce à cette configuration, nous avons pu établir la connexion, visualiser les résultats issus de l’ancienne data, et vérifier la cohérence des transformations via les premiers rapports de performance du babyfoot.
 
 ## ChatBot IA
 
