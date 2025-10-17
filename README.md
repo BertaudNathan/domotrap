@@ -58,6 +58,9 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 ## Technologies utilisées
 
 > DATA : SQL, Python, DAX (PowerBI)
+> IOT : C++, platformIO
+> Frontend : HTML, CSS, js
+> Backend : express.js, js
 
 ## Architecture
 
@@ -109,4 +112,4 @@ Exemple de lancement en **une seule commande**:
 
 > Section d'honnêteté, décrivez ce qui n'a pas été fait, ce qui aurait pu être amélioré, les limitations de votre solution actuelle. Montrez que vous avez une vision critique de votre travail, de ce qui a été accompli durant ces deux demi-journées.
 
-Le but n'est pas de faire un produit fini, mais de montrer vos compétences techniques, votre capacité à travailler en équipe, à gérer un projet, et à livrer quelque chose de fonctionnel dans un temps limité.
+Le projet est dans un bon état d'avancement. Il manque néanmoins une liaison entre le backend et les capteurs, donc les capteurs détectent la balle mais ne remontent pas l'information. Il y a également differentes parties du front qui ne sont pas assemblé ensemble.
