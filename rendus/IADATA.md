@@ -89,6 +89,13 @@ Grâce à cette configuration, nous avons pu établir la connexion, visualiser l
 
 ## ChatBot IA
 
+Un chatbot intelligent nommé Bob le Foot a été développé en Python.
+Son rôle est d’apporter une touche interactive et ludique à l’expérience babyfoot, en servant d’arbitre virtuel capable de répondre aux joueurs sur les règles, les fautes ou le déroulement des matchs.
+
+Le modèle s’appuie sur l’API Gemini de Google, configurée à partir d’un fichier JSON contenant plusieurs pré-prompts selon le rôle à adopter.
+L’agent a été testé localement dans un notebook Jupyter, puis partagé à l’équipe via Discord, accompagné du code, de la clé API et du fichier preprompt.json.
+Cette intégration visait à permettre aux autres membres (développeurs et front-end) d’intégrer Bob Foot dans l’interface du projet, pour enrichir l’interactivité et la dimension IA du babyfoot connecté.
+
 ## L'équipe DATA au sein de l'équipe
 
-Pour finir, nous avons pu être les pierres angulaires du groupe. Étant responsables de la partie data, tous les groupes devaient savoir quelles données étaient communiquées et de quelle manière. Grâce à notre expérience professionnelle, nous avons également animé des points réguliers durant ces dernières 48 heures afin de cadrer l’avancée du projet. Enfin, le fait d’être deux nous a permis de nous répartir les tâches : l’un de nous pouvait suivre de près un groupe en particulier afin de les aider et de répondre à leurs éventuelles questions.
+Pour finir, nous avons pu être les pierres angulaires du groupe. Étant responsables de la partie data, tous les groupes devaient savoir quelles données étaient communiquées et de quelle manière. Grâce à notre expérience professionnelle, nous avons également animé des points réguliers durant ces dernières 48 heures afin de cadrer l’avancée du projet. Enfin, le fait d’être deux nous a permis de nous répartir les tâches : l’un de nous pouvait suivre de près un groupe en particulier afin de les aider et de répondre à leurs éventuelles questionsce qui permettait au second d’avancer simultanément sur les livrables prévus et les aspects techniques liés à la data.
