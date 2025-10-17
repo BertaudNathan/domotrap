@@ -1,16 +1,24 @@
 events {}
+
 http {
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
+  types { text/css css; application/javascript js mjs; text/javascript js; }
+
   server {
     listen 80;
     server_name _;
 
-    # Front statique
     root /usr/share/nginx/html;
     index index.html;
 
-    # Reverse proxy → backend Node
+    location / {
+      try_files $uri $uri/ =404;
+    }
+
     location /api/ {
-      proxy_pass http://backend:8080/;   # service "backend" dans le réseau compose
+      proxy_pass http://backend:8080/;
       proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
       proxy_http_version 1.1;
