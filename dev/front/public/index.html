@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Domotrap - connceted table football</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+    <script src="script.js"></script>
+    <script>
+      console.log("Joueur connecté :", sessionStorage.getItem("player_name"));
+    </script>
+  </head>
+  <script>
+    async function loadLeaderboard() {
+      try {
+        const response = await fetch("http://localhost:8000/leaderboard");
+        const data = await response.json();
+
+        const tbody = document.getElementById("ranking-body");
+        tbody.innerHTML = ""; // vider le tbody
+
+        data.forEach((player) => {
+          const row = document.createElement("tr");
+
+          const date = new Date(player.last_match_date);
+          const formattedDate = date.toLocaleDateString("fr-FR", {
+            day: "2-digit",
+            month: "2-digit",
+          });
+
+          row.innerHTML = `
+            <td>${player.rank}</td>
+            <td>${player.name}</td>
+            <td>${player.score}</td>
+            <td>${formattedDate}</td>
+            <td>${player.total_matches}</td>
+          `;
+
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Erreur lors du chargement du classement:", err);
+      }
+    }
+
+    // Charger le classement au chargement de la page
+    window.addEventListener("DOMContentLoaded", loadLeaderboard);
+  </script>
+
+  <body>
+    <header id="navbar" class="nav">
+      <nav>
+        <div class="nav-logo">Domotrap</div>
+        <ul>
+          <li class="nav-item is-active"><a href="index.html">Home</a></li>
+          <li class="nav-item"><a href="#ranking">Ranking</a></li>
+
+          <!-- Connexion / Inscription -->
+          <li class="nav-item" id="nav-connexion">
+            <a href="connexion.html">Connexion</a>
+          </li>
+          <li class="nav-item" id="nav-register">
+            <a href="inscription.html" class="inscription-btn">Inscription</a>
+          </li>
+
+          <!-- Joueur connecté / Déconnexion -->
+          <li class="nav-item" id="nav-user" style="display: none">
+            <span id="user-name"></span>
+            <button id="logout-btn" style="margin-left: 10px">
+              Déconnexion
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <script>
+        const playerName = sessionStorage.getItem("player_name");
+        const idplayer = sessionStorage.getItem("player_id");
+        const navConnexion = document.getElementById("nav-connexion");
+        const navRegister = document.getElementById("nav-register");
+        const navUser = document.getElementById("nav-user");
+        const userNameSpan = document.getElementById("user-name");
+        const logoutBtn = document.getElementById("logout-btn");
+
+        if (playerName) {
+          // Affiche le nom et le bouton logout
+          userNameSpan.textContent = "Bonjour, " + playerName;
+          navUser.style.display = "inline-flex";
+
+          // Cache Connexion et Register
+          navConnexion.style.display = "none";
+          navRegister.style.display = "none";
+        }
+
+        // Déconnexion
+        logoutBtn.addEventListener("click", () => {
+          sessionStorage.clear(); // Supprime les infos du joueur
+          window.location.href = "index.html"; // Retour à la page acceuil
+        });
+      </script>
+    </header>
+
+    <section class="intro">
+      <div class="intro-content">
+        <h1>Turn every game into a legend</h1>
+        <p>
+          Domotrap, The connected table football game that tracks your scores,
+          rankings and tournaments !
+        </p>
+        <div class="intro-btn">
+          <a href="connexion.html" class="btn-primary">Connexion</a>
+          <a href="inscription.html" class="btn-secondary">Inscription</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="presentation">
+      <h2>How does it work ?</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Create your player profile</h3>
+          <p>Sign up to keep track of your games and performance.</p>
+        </div>
+        <div class="card">
+          <h3>Play and record your scores</h3>
+          <p>Every game counts! Your points are added automatically.</p>
+        </div>
+        <div class="card">
+          <h3>Move up in the rankings</h3>
+          <p>
+            Take on your mates and become the king of connected table football.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="ranking" class="ranking">
+      <h2>Ranking best players</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Score</th>
+            <th>Date</th>
+            <th>Match</th>
+          </tr>
+        </thead>
+        <tbody id="ranking-body">
+          <!-- Les lignes seront insérées ici -->
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <div class="footer-content">
+        <p>© Hackathon Ynov 2025</p>
+        <p><a href="#Contact">Contactez-nous</a></p>
+      </div>
+    </footer>
+  </body>
+</html>
