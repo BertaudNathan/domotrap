@@ -47,6 +47,8 @@ Ce processus a permis de traiter les incohérences laissées après OpenRefine e
 
 - Uniformisation des dates, incluant la détection et l’exclusion des dates non plausibles (avant 2010 ou dans le futur), puis l’extraction de l’année, du mois et du jour pour les analyses temporelles.
 
+ Le notebook de nettoyage se trouve ici : `rendus/data/data.ipynb`
+
 Standardisation des champs logiques, comme la conversion de is_substitute en booléen (True/False) afin d’unifier les types.
 > ### Clustering
 > <img src="../ressources/cluster_text.png" alt="Schéma d'architecture" width="100%"/>
