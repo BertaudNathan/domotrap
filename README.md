@@ -148,7 +148,7 @@ Les administrateurs disposent d’un dashboard leur permettant de gérer les uti
 <img src="ressources/deploy_ansible.png" alt="Deploy CLI" width="100%"/>
 
 > 
-> 4. **Explication du script `deploy.sh`** :
+> 3. **Explication du script `deploy.sh`** :
 > 
 >    Voici ce que fait le script `deploy.sh` en détails :
 >    - **Installation de Docker et Docker Compose** : Le script utilise un playbook **Ansible** pour installer Docker et Docker Compose.
@@ -158,7 +158,7 @@ Les administrateurs disposent d’un dashboard leur permettant de gérer les uti
 >      - Il démarre les services en arrière-plan.
 >    - **Serveur accessible via localhost** : Une fois le déploiement terminé, l'application sera accessible via **localhost** dans votre navigateur.
 > 
-> 5. **Vérifiez le bon fonctionnement du déploiement** :
+> 4. **Vérifiez le bon fonctionnement du déploiement** :
 > 
 >    Après avoir lancé le script, l'application devrait être accessible via **localhost** sur votre machine. Ouvrez un navigateur et accédez à :
 > 
