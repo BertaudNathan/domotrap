@@ -46,22 +46,6 @@ Hackathon/
 
 ---
 
-## Aperçu du Dashboard 
-
-### Page de Connexion 
-  <img src="../ressources/connexion.png" alt="Page de connexion" width="50%">
-
-
-### Gestions des utilisateurs
-  <img src="../ressources/gestion-admin.png" alt="Page de connexion" width="50%">
-
-
-### Status
-  <img src="../ressources/status.png" alt="Page de connexion" width="50%">
-
-### Liste des babyfoots
-  <img src="../ressources/babyfoots.png" alt="Page de connexion" width="50%">
-
 
 ## 🔐 Auth & sessions (comportement attendu côté API)
 
@@ -255,9 +239,3 @@ curl -X POST -H "Content-Type: application/json"   -b "Dashboard.sid=XXX"   -d '
 - [ ] CORS + cookies configurés si API ≠ même origin
 - [ ] Suppression des mocks en fin de chantier
 
-
-##  Axe d'amélioration et évolution futures
-
-Pour des raisons de temps le site joueur et le dashboard administrateur fonctionnent aujourd’hui de façon indépendante.
-Le dashboard utilise des données mockées pour simuler l’API, ce qui nous a permis de valider toute la logique d’authentification, de rôles et d’affichage.
-La prochaine étape sera de lier les deux via une API commune afin que les données de match, utilisateurs et babyfoots soient synchronisées.
