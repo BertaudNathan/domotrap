@@ -46,10 +46,13 @@
     mode: "0644"
 
 
-- name: Start / update stack with Compose v2
-  shell: |
-    docker compose -f {{ app_root }}/docker-compose.yml up --pull always --build -d
-  args:
-    chdir: "{{ app_root }}"
-  register: compose_up
-  changed_when: "'Container' in compose_up.stdout or 'Recreating' in compose_up.stdout or 'Building' in compose_up.stdout"
+- name: Ensure community.docker is installed
+  ansible.builtin.meta: require_collection
+  collections:
+    - community.docker
+
+- name: Start application stack with Compose v2
+  community.docker.docker_compose:
+    project_src: "{{ app_root }}"
+    state: present
+    build: true
