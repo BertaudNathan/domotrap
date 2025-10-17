@@ -68,6 +68,9 @@ Pour cela, nous avons créé une base SQLite permissive, pensée pour accepter c
 Une image Docker a été mise en place pour tester l’envoi et la persistance de ces anciennes données, tout en validant la communication entre la base et les outils d’analyse.
 Cette étape servait avant tout de proof of concept pour vérifier la faisabilité du pipeline complet et la stabilité du stockage.
 
+Le code lié à l’insertion et au déploiement Docker est disponible dans le dossier : `rendus/data/babyfoot_docker`
+
+
 ## Mise en place de la BD
 
 En parallèle, nous avons mis en place une base de données robuste. Toutes les spécifications et la documentation se trouvent dans le fichier [db_sql/documentation.md](db_sql/documentation.md).
@@ -79,6 +82,9 @@ Niveau technologie nous nous sommes tournés aussi sur SQLite pour la légereté
 Lors de la connexion à Power BI, nous avons rencontré un problème d’incompatibilité directe avec SQLite, car Power BI ne prend pas en charge ce moteur nativement.
 La solution a été d’installer manuellement le driver ODBC SQLite, permettant ainsi de créer une passerelle entre Power BI et la base locale.
 Grâce à cette configuration, nous avons pu établir la connexion, visualiser les résultats issus de l’ancienne data, et vérifier la cohérence des transformations via les premiers rapports de performance du babyfoot.
+
+> ### Database
+<img width="1098" height="706" alt="image" src="https://github.com/user-attachments/assets/1603f2f7-21b4-44fd-a0b9-741916c995a2" />
 
 > ### Dashboard User
 <img width="1500" height="827" alt="image" src="https://github.com/user-attachments/assets/3ac3e9be-4a40-4afb-8e56-e7ca9197d9c1" />
