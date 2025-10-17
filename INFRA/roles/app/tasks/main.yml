@@ -49,4 +49,4 @@
   community.docker.docker_compose_v2:
     project_src: "{{ app_root }}"
     state: present
-    build: true
+    build: always
