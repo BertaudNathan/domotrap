@@ -26,10 +26,10 @@
     mode: "0644"
   notify: Restart backend
 
-- name: Copy DB schema (sqlite)
+- name: Copy DB schema folder (must include script_db.sql)
   copy:
-    src: "db/"
-    dest: "{{ app_root }}/db/"
+    src: "db/"                           
+    dest: "{{ sqlite_schema_dir }}/"
     mode: "0644"
 
 - name: Deploy nginx.conf
@@ -50,3 +50,5 @@
     project_src: "{{ app_root }}"
     state: present
     build: "always"
+    pull: "always"
+    remove_orphans: true
