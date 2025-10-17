@@ -1,0 +1,32 @@
+---
+- name: Update system
+  apt:
+    update_cache: true
+    upgrade: safe
+
+- name: Install base tools
+  apt:
+    name:
+      - git
+      - curl
+      - ufw
+      - htop
+    state: present
+
+- name: Enable firewall
+  when: enable_firewall
+  community.general.ufw:
+    state: enabled
+    policy: deny
+
+- name: Open needed ports
+  when: enable_firewall
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - 22
+    - "{{ http_port }}"
+    - "{{ backend_port }}"
+

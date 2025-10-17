@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lives Match - Domotrap</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+    <link rel="stylesheet" href="../assets/matches.css" />
+    <script>
+      // Script pour gérer l'affichage/déconnexion utilisateur
+      document.addEventListener("DOMContentLoaded", () => {
+        const playerName = sessionStorage.getItem("player_name");
+        const playerId = sessionStorage.getItem("player_id");
+        const nav = document.querySelector("nav ul");
+
+        if (playerName) {
+          // Supprime les boutons Connexion et Register
+          nav.innerHTML = `
+            <li class="nav-item is-active"><a href="index.html">Home</a></li>
+            <li class="nav-item"><a href="#ranking">Ranking</a></li>
+            <li class="nav-item"><span style="padding: 0 10px;">👋 ${playerName} ${playerId}</span></li>
+            <li class="nav-item"><a href="#" id="logout-btn">Déconnexion</a></li>
+          `;
+
+          // Déconnexion : suppression sessionStorage + redirection
+          document
+            .getElementById("logout-btn")
+            .addEventListener("click", (e) => {
+              e.preventDefault();
+              sessionStorage.clear();
+              window.location.href = "index.html";
+            });
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <header id="navbar" class="nav">
+      <nav>
+        <div class="nav-logo">Domotrap</div>
+        <ul>
+          <li class="nav-item is-active"><a href="index.html">Home</a></li>
+          <li class="nav-item"><a href="#ranking">Ranking</a></li>
+          <li class="nav-item"><a href="connexion.html">Connexion</a></li>
+          <li class="nav-item">
+            <a href="inscription.html" class="inscription-btn">Register</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Section Live -->
+    <section class="live-section">
+      <div class="live-header">
+        <h1>
+          <span class="live-indicator"></span>
+          Live Matches
+        </h1>
+        <p class="live-subtitle">Real-time updates • Refresh every 3 seconds</p>
+      </div>
+
+      <div class="create-match">
+        <h2>Create a New Match</h2>
+        <form id="createMatchForm">
+          <label for="tableSelect">Select Table:</label>
+          <select id="tableSelect" required>
+            <option value="">-- Choose a table --</option>
+          </select>
+
+          <label for="teamSelect">Choose Your Team:</label>
+          <select id="teamSelect" required>
+            <option value="red">Red Team</option>
+            <option value="blue">Blue Team</option>
+          </select>
+
+          <label for="pseudoInput">Your Pseudo:</label>
+          <input
+            type="text"
+            id="pseudoInput"
+            placeholder="Enter your pseudo"
+            required
+          />
+
+          <button type="submit" class="btn-match">🚀 Create Match</button>
+        </form>
+      </div>
+
+      <!-- Container pour les matchs -->
+      <div class="matches-container" id="liveMatchesContainer">
+        <div
+          class="loading"
+          style="grid-column: 1/-1; text-align: center; padding: 40px"
+        >
+          ⏳ Loading live matches...
+        </div>
+      </div>
+      <button class="refresh-btn" onclick="loadLiveMatches()">
+        🔄 Refresh Now
+      </button>
+    </section>
+
+    <footer>
+      <div class="footer-content">
+        <p>© Hackathon Ynov 2025</p>
+        <p><a href="#Contact">Contact us</a></p>
+      </div>
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const tableSelect = document.getElementById("tableSelect");
+
+        if (tableSelect) {
+          fetch("http://localhost:8000/table")
+            .then((response) => response.json())
+            .then((tables) => {
+              tableSelect.innerHTML = `<option value="">-- Choose a table --</option>`;
+              const availableTables = tables.filter(
+                (table) => table.table_state === "ok"
+              );
+              availableTables.forEach((table) => {
+                const option = document.createElement("option");
+                option.value = table.Id_babyfoot_table;
+                option.textContent = `Table ${table.Id_babyfoot_table} - ${table.table_location}`;
+                tableSelect.appendChild(option);
+              });
+            })
+            .catch((error) => {
+              console.error("Erreur lors du chargement des tables :", error);
+            });
+        }
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("createMatchForm");
+        if (!form) return; // sécurité
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const tableId = document.getElementById("tableSelect").value;
+          const teamColor = document.getElementById("teamSelect").value;
+          const pseudo = document.getElementById("pseudoInput").value.trim();
+
+          const playerId = sessionStorage.getItem("player_id"); // récupère ID joueur
+          if (!playerId) {
+            alert("Vous devez être connecté pour créer un match.");
+            return;
+          }
+
+          if (!tableId || !teamColor || !pseudo) {
+            alert("Please fill in all fields!");
+            return;
+          }
+
+          let matchId;
+
+          try {
+            // Étape 1 — Créer le match (ou récupérer l'existant)
+            const response = await fetch("http://localhost:8000/match", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                match_date: new Date().toISOString(),
+                Id_babyfoot_table: parseInt(tableId),
+              }),
+            });
+
+            if (!response.ok)
+              throw new Error("Failed to create or retrieve match");
+
+            const data = await response.json();
+            matchId = data.matchId;
+
+            if (data.existing) {
+              alert(
+                `Un match est déjà en cours sur cette table (ID: ${matchId})`
+              );
+            } else {
+              alert(`Match créé avec succès ! ID: ${matchId}`);
+            }
+
+            // Étape 2 — Ajouter l'entrée dans la table play
+            const playResponse = await fetch("http://localhost:8000/play", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                Id_match: matchId,
+                player_id: parseInt(playerId),
+                role: "attack", // ou laisse l'utilisateur choisir ?
+                team_color: teamColor,
+                is_substitute: false,
+              }),
+            });
+
+            if (!playResponse.ok) {
+              const errorData = await playResponse.json();
+              throw new Error(errorData.message || "Erreur ajout play");
+            }
+
+            alert("Vous avez été ajouté au match avec succès !");
+
+            // Recharger les matchs live si la fonction existe
+            if (typeof loadLiveMatches === "function") {
+              loadLiveMatches();
+            }
+
+            form.reset();
+          } catch (err) {
+            console.error("Erreur:", err);
+            alert("Erreur : " + err.message);
+          }
+        });
+      });
+    </script>
+    <script>
+      async function createLiveMatchCard(match, tables) {
+        const card = document.createElement("div");
+        card.className = "live-match-card";
+
+        // Trouver la table correspondante
+        const table = tables.find(
+          (t) => t.Id_babyfoot_table === match.Id_babyfoot_table
+        );
+        const tableName = table ? table.table_location : "Unknown Table";
+
+        // Calcul du temps de départ
+        const startTime = new Date(match.match_date);
+
+        // Création d’un conteneur timer
+        const timerElement = document.createElement("div");
+        timerElement.className = "match-timer";
+
+        // Met à jour le timer toutes les secondes
+        const updateTimer = () => {
+          const now = new Date();
+          const elapsed = Math.floor((now - startTime) / 1000);
+          timerElement.textContent = formatTimer(elapsed);
+        };
+
+        updateTimer(); // mise à jour immédiate
+        const timerInterval = setInterval(updateTimer, 1000); // mise à jour toutes les secondes
+
+        // Quand le match est terminé, on arrête le timer (optionnel)
+        if (match.match_winner !== null) {
+          clearInterval(timerInterval);
+        }
+
+        // Récupérer les joueurs du match
+        const players = await getMatchPlayers(match.Id_match);
+
+        const redTeam = players.filter((p) => p.team_color === "red");
+        const blueTeam = players.filter((p) => p.team_color === "blue");
+
+        const canJoinRed = redTeam.length < 2;
+        const canJoinBlue = blueTeam.length < 2;
+
+        card.innerHTML = `
+    <div class="live-badge">LIVE</div>
+    <div class="match-info">
+        <div class="table-name">${tableName}</div>
+    </div>
+    <div class="teams-display">
+      <div class="team team-red">
+        <div class="team-label">Red Team</div>
+        <div class="team-players">
+          ${redTeam
+            .map((p) => `<div class="player-tag">${p.player_name}</div>`)
+            .join("")}
+        </div>
+        ${
+          canJoinRed
+            ? `<button class="player-tag join-btn" data-match="${match.Id_match}" data-team="red">Join Red</button>`
+            : ""
+        }
+      </div>
+
+      <div class="score-display">
+        <div class="score-numbers">
+          ${match.match_final_score_red} <span class="score-vs">-</span> ${
+          match.match_final_score_blue
+        }
+        </div>
+        <div class="match-timer-wrapper"></div>
+      </div>
+
+      <div class="team team-blue">
+        <div class="team-label">Blue Team</div>
+        <div class="team-players">
+          ${blueTeam
+            .map((p) => `<div class="player-tag">${p.player_name}</div>`)
+            .join("")}
+        </div>
+        ${
+          canJoinBlue
+            ? `<button class="player-tag join-btn" data-match="${match.Id_match}" data-team="blue">Join Blue</button>`
+            : ""
+        }
+      </div>
+    </div>
+  `;
+
+        // Injecter dynamiquement le timer dans le bon endroit
+        const timerWrapper = card.querySelector(".match-timer-wrapper");
+        timerWrapper.appendChild(timerElement);
+
+        // Ajout des événements pour les boutons "Join"
+        const joinButtons = card.querySelectorAll(".join-btn");
+        joinButtons.forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const matchId = btn.dataset.match;
+            const team = btn.dataset.team;
+            await joinTeam(matchId, team);
+          });
+        });
+
+        return card;
+      }
+
+      async function getMatchPlayers(matchId) {
+        try {
+          const response = await fetch(
+            `http://localhost:8000/match/${matchId}/players`
+          );
+          if (!response.ok) return [];
+          return await response.json();
+        } catch (error) {
+          console.error("Error fetching players:", error);
+          return [];
+        }
+      }
+
+      function formatTimer(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
+          2,
+          "0"
+        )}`;
+      }
+
+      async function joinTeam(matchId, teamColor) {
+        const playerPseudo = prompt("Enter your pseudo to join the team:");
+        if (!playerPseudo) return;
+
+        try {
+          const response = await fetch(
+            `http://localhost:8000/match/${matchId}/join`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                player_pseudo: playerPseudo,
+                team_color: teamColor,
+              }),
+            }
+          );
+
+          if (response.ok) {
+            alert(`You joined the ${teamColor} team!`);
+            loadLiveMatches(); // recharge l'affichage
+          } else {
+            const error = await response.json();
+            alert(error.message);
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Server unreachable, try again later.");
+        }
+      }
+    </script>
+    <script>
+      async function loadLiveMatches() {
+        const container = document.getElementById("liveMatchesContainer");
+
+        try {
+          const matchResponse = await fetch("http://localhost:8000/match");
+          if (!matchResponse.ok) throw new Error("Failed to fetch matches");
+          const allMatches = await matchResponse.json();
+
+          const tableResponse = await fetch("http://localhost:8000/table");
+          if (!tableResponse.ok) throw new Error("Failed to fetch tables");
+          const tables = await tableResponse.json();
+
+          const liveMatches = allMatches.filter(
+            (match) => match.match_winner === null
+          );
+
+          if (liveMatches.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1;">
+                  <h2>No live matches right now</h2>
+                  <p>Check back later or start a new game!</p>
+                </div>`;
+            return;
+          }
+
+          container.innerHTML = "";
+          for (const match of liveMatches) {
+            const card = await createLiveMatchCard(match, tables);
+            container.appendChild(card);
+          }
+        } catch (error) {
+          console.error("Error loading live matches:", error);
+          container.innerHTML = `<div class="empty-state" style="color: red;">❌ Unable to load matches</div>`;
+        }
+      }
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        loadLiveMatches(); // <- déclenche le chargement automatique au démarrage
+      });
+    </script>
+  </body>
+</html>

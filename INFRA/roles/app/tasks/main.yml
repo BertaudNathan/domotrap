@@ -1,0 +1,54 @@
+---
+- name: Ensure directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ app_root }}"
+    - "{{ data_dir }}"
+    - "{{ backup_dir }}"
+    - "{{ app_root }}/frontend"
+    - "{{ app_root }}/backend"
+    - "{{ app_root }}/db"
+
+- name: Copy frontend files (your HTML/CSS/JS)
+  copy:
+    src: "frontend/"
+    dest: "{{ app_root }}/frontend/"
+    mode: "0644"
+  notify: Restart frontend
+
+- name: Copy backend skeleton (can be overwritten later)
+  copy:
+    src: "backend/"
+    dest: "{{ app_root }}/backend/"
+    mode: "0644"
+  notify: Restart backend
+
+- name: Copy DB schema folder (must include script_db.sql)
+  copy:
+    src: "db/"                           
+    dest: "{{ sqlite_schema_dir }}/"
+    mode: "0644"
+
+- name: Deploy nginx.conf
+  template:
+    src: "nginx.conf.j2"
+    dest: "{{ app_root }}/nginx.conf"
+    mode: "0644"
+  notify: Restart frontend
+
+- name: Deploy docker-compose.yml
+  template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ app_root }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Start application stack with Compose v2
+  community.docker.docker_compose_v2:
+    project_src: "{{ app_root }}"
+    state: present
+    build: "always"
+    pull: "always"
+    remove_orphans: true
