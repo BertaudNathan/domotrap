@@ -335,16 +335,13 @@ async function loadTables() {
   }
 }
 
-// Gérer la création du match
 async function handleCreateMatch(e) {
   e.preventDefault();
 
   const tableId = document.getElementById("tableSelect").value;
-  const teamColor = document.getElementById("teamSelect").value;
-  const pseudo = document.getElementById("pseudoInput").value.trim();
 
-  if (!tableId || !teamColor || !pseudo) {
-    alert("Please fill in all fields!");
+  if (!tableId) {
+    alert("Please select a table!");
     return;
   }
 
@@ -353,25 +350,26 @@ async function handleCreateMatch(e) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        match_date: new Date().toISOString(),
         Id_babyfoot_table: parseInt(tableId),
-        player_pseudo: pseudo,
-        team_color: teamColor,
       }),
     });
 
     if (!response.ok) throw new Error("Failed to create match");
 
-    const match = await response.json();
-    alert(` Match created successfully! ID: ${match.Id_match}`);
+    const data = await response.json();
+    const matchId = data.matchId;
 
-    // Rafraîchir la liste des matchs live
+    alert(`Match created successfully! ID: ${matchId}`);
+
+    // Après création du match, tu peux maintenant appeler la fonction pour ajouter un joueur
+    // addPlayerToMatch(matchId, pseudo, teamColor);
+
     loadLiveMatches();
-
-    // Réinitialiser le formulaire
     document.getElementById("createMatchForm").reset();
   } catch (err) {
     console.error("Error creating match:", err);
-    alert(" Could not create match. Try again later.");
+    alert("Could not create match. Try again later.");
   }
 }
 
@@ -404,3 +402,10 @@ async function joinTeam(matchId, teamColor) {
     alert("Server unreachable, try again later.");
   }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("createMatchForm");
+  if (form) {
+    form.addEventListener("submit", handleCreateMatch);
+  }
+});

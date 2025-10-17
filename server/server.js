@@ -719,6 +719,28 @@ app.get("/match/:id/duration", (req, res) => {
   });
 });
 
+app.get("/match/:id/players", (req, res) => {
+  const matchId = req.params.id;
+
+  // Récupérer les joueurs d'un match avec infos de la table play et du joueur
+  const sql = `
+    SELECT p.player_id, p.player_pseudo, p.player_name, pl.role, pl.team_color, pl.is_substitute, pl.goal, pl.own_goal, pl.mood, pl.comment
+    FROM play pl
+    JOIN player p ON pl.player_id = p.player_id
+    WHERE pl.Id_match = ?
+  `;
+
+  db.all(sql, [matchId], (err, players) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Erreur lors de la récupération des joueurs du match",
+        error: err.message,
+      });
+    }
+    res.json(players);
+  });
+});
+
 app.listen(port, () => {
   console.log("Server app listening on port " + port);
 });
