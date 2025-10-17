@@ -101,13 +101,82 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 
 ## Guide de déploiement
 
-> Expliquez comment déployer votre application **EN MOINS DE LIGNES DE COMMANDE POSSIBLES**. Docker, Ansible, Terraform, Scripts Shell... Le but est de pouvoir déployer votre application en une seule commande ou presque.
 
-Exemple de lancement en **une seule commande**:
+> ## Pré-requis
+> 
+> Avant de commencer, voici les pré-requis pour que le déploiement se passe bien :
+> 
+> 1. **Serveur Linux (Debian/Ubuntu)** avec **4 Go de RAM** et **2 CPU** (x86_64).
+> 2. **Accès SSH** à la machine où le projet sera déployé.
+> 3. **Git** installé pour cloner le repository.
+> 4. Le **script `deploy.sh`** sera utilisé pour automatiser l'installation et le déploiement des services.
+> 
+> ---
+> 
+> ## Étapes de déploiement
+> 
+> 1. **Clonez le repository contenant le projet** :
+> 
+>    Sur votre machine cible (où vous souhaitez déployer l'application), clonez le repository contenant le code source de l'application :
+> 
+>    ```bash
+>    git clone https://github.com/BertaudNathan/domotrap.git
+>    cd domotrap
+>    cd INFRA
+>    ```
+> 
+> 2. **Lancer le script `deploy.sh`** :
+> 
+>    Le script `deploy.sh` est responsable de l'installation de **Docker**, **Docker Compose**, ainsi que du déploiement de toute l'infrastructure (frontend, backend, base de données).
+> 
+>    Ce script s'occupe de :
+>    - Installer Docker et Docker Compose.
+>    - Déployer les services nécessaires en utilisant Docker Compose.
+>    - Configurer les volumes et monter les fichiers nécessaires pour le frontend et le backend.
+>    - Lancer les conteneurs avec les services appropriés (frontend, backend, base de données).
+> 
+>    Pour exécuter le script `deploy.sh`, utilisez la commande suivante depuis la racine du projet :
+> 
+>    ```bash
+>    sudo ./deploy.sh
+>    ```
+> 
+> 3. **Explication du script `deploy.sh`** :
+> 
+>    Voici ce que fait le script `deploy.sh` en détails :
+>    - **Installation de Docker et Docker Compose** : Le script utilise un playbook **Ansible** pour installer Docker et Docker Compose.
+>    - **Déploiement avec Docker Compose** : Le script exécute ensuite les commandes Docker Compose pour déployer l'infrastructure :
+>      - Il récupère l'image de Docker si nécessaire.
+>      - Il monte les volumes du frontend, backend, et base de données.
+>      - Il démarre les services en arrière-plan.
+>    - **Serveur accessible via localhost** : Une fois le déploiement terminé, l'application sera accessible via **localhost** dans votre navigateur.
+> 
+> 4. **Vérifiez le bon fonctionnement du déploiement** :
+> 
+>    Après avoir lancé le script, l'application devrait être accessible via **localhost** sur votre machine. Ouvrez un navigateur et accédez à :
+> 
+>    ```bash
+>    http://localhost
+>    ```
+> 
+> 5. **Vérifications post-déploiement** :
+> 
+>    Une fois l'infrastructure déployée, vous pouvez vérifier que tout fonctionne correctement en utilisant Docker Compose pour lister les conteneurs en cours d'exécution :
+> 
+>    ```bash
+>    docker-compose ps
+>    ```
+> 
+>    Vous devriez voir les services `frontend`, `backend` et `db` actifs.
+> 
+> 6. **Redémarrer les services si nécessaire** :
+> 
+>    Si vous avez besoin de redémarrer ou de mettre à jour les services après le déploiement, vous pouvez utiliser la commande suivante :
+> 
+>    ```bash
+>    docker-compose up -d --build
+>    ```
 
-[Références Proxmox HelperScripts](https://github.com/community-scripts/ProxmoxVE/tree/main/install)
-
-> /!\ IMPORTANT /!\ : Votre projet sera déployé sur une machine **LINUX** (Debian/Ubuntu), avec 4Go de RAM et 2 CPU (x86_64). Assurez-vous que votre application peut fonctionner dans ces conditions. Il n'y aura pas de "Ca marche sur mon Mac." ou encore "Si on alligne les astres sur Windows XP ça passe.".
 
 ## Etat des lieux
 
