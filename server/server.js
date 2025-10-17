@@ -529,6 +529,48 @@ app.patch("/play/:Id_match/:player_id", (req, res) => {
   });
 });
 
+app.get("/play", (req, res) => {
+  const sql = "SELECT * FROM play";
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Erreur lors de la récupération des participations",
+        error: err.message,
+      });
+    }
+    res.json(rows);
+  });
+});
+
+// Route pour le classement
+app.get("/leaderboard", (req, res) => {
+  const sql = `
+  SELECT
+  RANK() OVER (ORDER BY COALESCE(SUM(play.goal), 0) DESC) AS rank,
+  player.player_pseudo AS name,
+  COALESCE(SUM(play.goal), 0) AS score,
+  MAX(match_.match_date) AS last_match_date,
+  COUNT(DISTINCT play.Id_match) AS total_matches
+  FROM player
+  LEFT JOIN play ON player.player_id = play.player_id
+  LEFT JOIN match_ ON play.Id_match = match_.Id_match
+  GROUP BY player.player_id
+  ORDER BY score DESC
+  LIMIT 5
+
+  `;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Erreur lors de la récupération du classement",
+        error: err.message,
+      });
+    }
+    res.status(200).json(rows);
+  });
+});
+
 app.listen(port, () => {
   console.log("Server app listening on port " + port);
 });
