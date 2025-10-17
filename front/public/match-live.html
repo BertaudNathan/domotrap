@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lives Match - Domotrap</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+    <link rel="stylesheet" href="../assets/matches.css" />
+    <script defer src="../assets/script.js"></script>
+    <script>
+      // Script pour gérer l'affichage/déconnexion utilisateur
+      document.addEventListener("DOMContentLoaded", () => {
+        const playerName = sessionStorage.getItem("player_name");
+        const nav = document.querySelector("nav ul");
+
+        if (playerName) {
+          // Supprime les boutons Connexion et Register
+          nav.innerHTML = `
+            <li class="nav-item is-active"><a href="index.html">Home</a></li>
+            <li class="nav-item"><a href="#ranking">Ranking</a></li>
+            <li class="nav-item"><span style="padding: 0 10px;">👋 ${playerName}</span></li>
+            <li class="nav-item"><a href="#" id="logout-btn">Déconnexion</a></li>
+          `;
+
+          // Déconnexion : suppression sessionStorage + redirection
+          document
+            .getElementById("logout-btn")
+            .addEventListener("click", (e) => {
+              e.preventDefault();
+              sessionStorage.clear();
+              window.location.href = "index.html";
+            });
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <header id="navbar" class="nav">
+      <nav>
+        <div class="nav-logo">Domotrap</div>
+        <ul>
+          <li class="nav-item is-active"><a href="index.html">Home</a></li>
+          <li class="nav-item"><a href="#ranking">Ranking</a></li>
+          <li class="nav-item"><a href="connexion.html">Connexion</a></li>
+          <li class="nav-item">
+            <a href="inscription.html" class="inscription-btn">Register</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Section Live -->
+    <section class="live-section">
+      <div class="live-header">
+        <h1>
+          <span class="live-indicator"></span>
+          Live Matches
+        </h1>
+        <p class="live-subtitle">Real-time updates • Refresh every 3 seconds</p>
+      </div>
+
+      <div class="create-match">
+        <h2>Create a New Match</h2>
+        <form id="createMatchForm">
+          <label for="tableSelect">Select Table:</label>
+          <select id="tableSelect" required>
+            <option value="">-- Choose a table --</option>
+          </select>
+
+          <label for="teamSelect">Choose Your Team:</label>
+          <select id="teamSelect" required>
+            <option value="red">Red Team</option>
+            <option value="blue">Blue Team</option>
+          </select>
+
+          <label for="pseudoInput">Your Pseudo:</label>
+          <input
+            type="text"
+            id="pseudoInput"
+            placeholder="Enter your pseudo"
+            required
+          />
+
+          <button type="submit" class="btn-match">🚀 Create Match</button>
+        </form>
+      </div>
+
+      <!-- Container pour les matchs -->
+      <div class="matches-container" id="liveMatchesContainer">
+        <div
+          class="loading"
+          style="grid-column: 1/-1; text-align: center; padding: 40px"
+        >
+          ⏳ Loading live matches...
+        </div>
+      </div>
+      <button class="refresh-btn" onclick="loadLiveMatches()">
+        🔄 Refresh Now
+      </button>
+    </section>
+
+    <footer>
+      <div class="footer-content">
+        <p>© Hackathon Ynov 2025</p>
+        <p><a href="#Contact">Contact us</a></p>
+      </div>
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const tableSelect = document.getElementById("tableSelect");
+
+        if (tableSelect) {
+          fetch("http://localhost:8000/table")
+            .then((response) => response.json())
+            .then((tables) => {
+              tableSelect.innerHTML = `<option value="">-- Choose a table --</option>`;
+              const availableTables = tables.filter(
+                (table) => table.table_state === "ok"
+              );
+              availableTables.forEach((table) => {
+                const option = document.createElement("option");
+                option.value = table.Id_babyfoot_table;
+                option.textContent = `Table ${table.Id_babyfoot_table} - ${table.table_location}`;
+                tableSelect.appendChild(option);
+              });
+            })
+            .catch((error) => {
+              console.error("Erreur lors du chargement des tables :", error);
+            });
+        }
+      });
+    </script>
+  </body>
+</html>
