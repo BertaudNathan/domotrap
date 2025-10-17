@@ -1,22 +1,29 @@
-version: "3.3"
 services:
   # 1) Init sqlite: crée le fichier DB avec votre schema.sql
   db-init:
-    image: {{ db_init_image }}
+    image: alpine:3.20
     container_name: babyfoot-db-init
     volumes:
       - "{{ data_dir }}:/data"
-      - "{{ app_root }}/db:/init:ro"
+      - "{{ sqlite_schema_dir }}:/init:ro"
     entrypoint: ["/bin/sh","-c"]
     command: >
-      "apk add --no-cache sqlite && 
-       if [ ! -f /data/babyfoot.db ]; then 
-         echo 'Init sqlite...'; 
-         sqlite3 /data/babyfoot.db < /init/schema.sql; 
-       else 
-         echo 'DB already exists, skipping init'; 
-       fi"
+      set -eux;
+      apk add --no-cache sqlite;
+      # Vérif présence du schéma
+      if [ ! -f "/init/{{ sqlite_schema_file }}" ]; then
+        echo "ERROR: /init/{{ sqlite_schema_file }} not found" >&2; exit 2;
+      fi;
+      # Init seulement si DB absente ou vide
+      if [ ! -s "/data/babyfoot.db" ]; then
+        echo "Init sqlite…";
+        sqlite3 /data/babyfoot.db < "/init/{{ sqlite_schema_file }}";
+        sqlite3 /data/babyfoot.db ".tables";
+      else
+        echo "DB already exists, skipping init";
+      fi
     restart: "no"
+
 
   # 2) Backend Node (build local) — écoute 8080
   backend:
