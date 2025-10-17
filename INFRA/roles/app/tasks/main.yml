@@ -45,10 +45,11 @@
     dest: "{{ app_root }}/docker-compose.yml"
     mode: "0644"
 
-- name: Start stack (build backend)
-  community.docker.docker_compose_v2:
-    project_src: "{{ app_root }}"
-    state: present
-    build: always
-    pull: missing
 
+- name: Start / update stack with Compose v2
+  shell: |
+    docker compose -f {{ app_root }}/docker-compose.yml up --pull always --build -d
+  args:
+    chdir: "{{ app_root }}"
+  register: compose_up
+  changed_when: "'Container' in compose_up.stdout or 'Recreating' in compose_up.stdout or 'Building' in compose_up.stdout"
