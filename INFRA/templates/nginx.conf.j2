@@ -1,29 +1,32 @@
 events {}
 
 http {
-  include /etc/nginx/mime.types;   # << indispensable pour text/css
+  include /etc/nginx/mime.types;
   default_type application/octet-stream;
+
+  types {
+    text/css css;
+    application/javascript js mjs;
+    text/javascript js;
+  }
 
   server {
     listen 80;
     server_name _;
 
-    # Front statique
     root /usr/share/nginx/html;
     index index.html;
 
-    # Reverse proxy API
+    location / {
+      try_files $uri $uri/ =404;
+    }
+
     location /api/ {
       proxy_pass http://backend:8080/;
       proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
       proxy_http_version 1.1;
       proxy_set_header Connection "";
-    }
-
-    # Statique (optionnel mais propre)
-    location / {
-      try_files $uri $uri/ =404;
     }
   }
 }
