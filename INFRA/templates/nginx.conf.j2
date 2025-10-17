@@ -1,5 +1,9 @@
 events {}
+
 http {
+  include /etc/nginx/mime.types;   # << indispensable pour text/css
+  default_type application/octet-stream;
+
   server {
     listen 80;
     server_name _;
@@ -8,14 +12,18 @@ http {
     root /usr/share/nginx/html;
     index index.html;
 
-    # Reverse proxy → backend Node
+    # Reverse proxy API
     location /api/ {
-      proxy_pass http://backend:8080/;   # service "backend" dans le réseau compose
+      proxy_pass http://backend:8080/;
       proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
       proxy_http_version 1.1;
       proxy_set_header Connection "";
     }
+
+    # Statique (optionnel mais propre)
+    location / {
+      try_files $uri $uri/ =404;
+    }
   }
 }
-
