@@ -130,5 +130,56 @@
         }
       });
     </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("createMatchForm");
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const tableId = document.getElementById("tableSelect").value;
+          const teamColor = document.getElementById("teamSelect").value;
+          const pseudo = document.getElementById("pseudoInput").value.trim();
+
+          if (!tableId || !teamColor || !pseudo) {
+            alert("Please fill in all fields!");
+            return;
+          }
+
+          try {
+            // On crée le match en envoyant la date + id table
+            const response = await fetch("http://localhost:8000/match", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                match_date: new Date().toISOString(),
+                Id_babyfoot_table: parseInt(tableId),
+                // Tu peux ajouter d'autres champs si besoin ici
+              }),
+            });
+            console.log(response);
+
+            if (!response.ok) throw new Error("Failed to create match");
+
+            const data = await response.json();
+            const matchId = data.matchId;
+
+            alert(`Match created successfully! ID: ${matchId}`);
+
+            // TODO : Si tu as une route pour ajouter un joueur au match, fais-le ici en appelant une fonction
+
+            // Recharge la liste des matchs live (si loadLiveMatches() existe)
+            if (typeof loadLiveMatches === "function") {
+              loadLiveMatches();
+            }
+
+            form.reset();
+          } catch (err) {
+            console.error("Error creating match:", err);
+            alert("Could not create match. Try again later.");
+          }
+        });
+      });
+    </script>
   </body>
 </html>

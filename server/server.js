@@ -272,6 +272,7 @@ app.get("/match/:id", (req, res) => {
 
 //ajouter un match
 app.post("/match", (req, res) => {
+  console.log(req.body);
   const {
     match_date,
     Id_babyfoot_table,

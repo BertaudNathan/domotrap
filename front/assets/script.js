@@ -140,7 +140,7 @@ async function loadLiveMatches() {
 
   try {
     // 1. Récupérer tous les matchs
-    const matchResponse = await fetch(`${API_URL}/match`);
+    const matchResponse = await fetch(`http://localhost:8000/match`);
     if (!matchResponse.ok) throw new Error("Failed to fetch matches");
     const allMatches = await matchResponse.json();
 
@@ -337,6 +337,7 @@ async function loadTables() {
 
 async function handleCreateMatch(e) {
   e.preventDefault();
+  console.log("handleCreateMatch triggered");
 
   const tableId = document.getElementById("tableSelect").value;
 
@@ -346,7 +347,7 @@ async function handleCreateMatch(e) {
   }
 
   try {
-    const response = await fetch(`${API_URL}/match`, {
+    const response = await fetch(`http://localhost:8000/match`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -402,10 +403,3 @@ async function joinTeam(matchId, teamColor) {
     alert("Server unreachable, try again later.");
   }
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("createMatchForm");
-  if (form) {
-    form.addEventListener("submit", handleCreateMatch);
-  }
-});
