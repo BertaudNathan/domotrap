@@ -53,7 +53,9 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 
 ## Contenu du projet
 
-> Décrivez brièvement le projet, son objectif. Utilisez une vue business pour décrire ce que votre produit/service apporte à vos utilisateurs.
+> Le projet consiste à créer une plateforme web connectée pour la gestion et le suivi des matchs de babyfoot.
+Les joueurs peuvent s’y inscrire, rejoindre une équipe et consulter les scores en direct.
+Les administrateurs disposent d’un dashboard leur permettant de gérer les utilisateurs, les babyfoots et les données des matchs.
 
 ## Technologies utilisées
 
