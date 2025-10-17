@@ -3,14 +3,15 @@
   apt:
     name:
       - docker.io
+      - docker-compose
     state: present
     update_cache: true
 
-- name: Install Docker Compose v2
-  shell: |
-    curl -L "https://github.com/docker/compose/releases/download/2.18.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
-  become: true
+#- name: Install Docker Compose v2
+#  shell: |
+#    curl -L "https://github.com/docker/compose/releases/download/2.18.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#    chmod +x /usr/local/bin/docker-compose
+#  become: true
 
 - name: Ensure Docker service running
   service:
