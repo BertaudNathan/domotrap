@@ -79,6 +79,9 @@ Niveau technologie nous nous sommes tournés aussi sur SQLite pour la légereté
 Lors de la connexion à Power BI, nous avons rencontré un problème d’incompatibilité directe avec SQLite, car Power BI ne prend pas en charge ce moteur nativement.
 La solution a été d’installer manuellement le driver ODBC SQLite, permettant ainsi de créer une passerelle entre Power BI et la base locale.
 Grâce à cette configuration, nous avons pu établir la connexion, visualiser les résultats issus de l’ancienne data, et vérifier la cohérence des transformations via les premiers rapports de performance du babyfoot.
+<img width="1500" height="827" alt="image" src="https://github.com/user-attachments/assets/3ac3e9be-4a40-4afb-8e56-e7ca9197d9c1" />
+<img width="1483" height="827" alt="image" src="https://github.com/user-attachments/assets/4252b388-abee-4886-bcdf-4d560a5829a1" />
+
 
 ## ChatBot IA
 
