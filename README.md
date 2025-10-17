@@ -33,9 +33,9 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 - Cloud & Infrastructure 1 : ARROUD Rayan
 - Cloud & Infrastructure 2 : MOUMINE Wassim
 - IA & Data 1 : FOURNET Charly
-- IA & Data 1 : RAVEL Arthur
+- IA & Data 2 : RAVEL Arthur
 - IoT/Mobile / Systèmes Embarqués 1 : Bertaud Nathan
-- IoT/Mobile / Systèmes Embarqués 1 : Reungoat Nathan
+- IoT/Mobile / Systèmes Embarqués 2 : Reungoat Nathan
 
 > Préciser qui est le porte parole de l'équipe, c'est lui qui répondra aux questions si nécessaire.
 
@@ -57,7 +57,7 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 
 ## Technologies utilisées
 
-> Ici, listez les principales technologies, en expliquant pourquoi vous les avez choisies. Tout choix technique, langages, frameworks doit être justifié. (Parce que vous maîtrisez déjà la techno, parce que c'est la plus adaptée au besoin, parce que c'est la plus innovante, etc.)
+> DATA : SQL, Python, DAX (PowerBI)
 
 ## Architecture
 

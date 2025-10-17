@@ -60,3 +60,10 @@ Table d'association entre matchs et joueurs (statistiques de participation).
 | `comment`       | TEXT    | -                                              | Commentaire libre sur la performance       |
 | `team_color`    | TEXT    | CHECK ('red', 'blue')                          | Couleur de l'équipe                       |
 | `is_substitute` | BOOLEAN | -                                              | Indique si le joueur est remplaçant (0/1) |
+
+
+## MCD
+
+![MCD — Modèle conceptuel de données](../DATA/images/MCD.png)
+
+*Figure : MCD du schéma de la base "babyfoot"*
