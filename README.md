@@ -165,7 +165,9 @@ Les administrateurs disposent d’un dashboard leur permettant de gérer les uti
 >    ```bash
 >    http://localhost
 >    ```
-> <img src="ressources/aperçu_localhost.png" alt="Aperçu du site web hébergé" width="100%"/>
+
+<img src="ressources/aperçu_localhost.png" alt="Aperçu du site web hébergé" width="100%"/>
+
 > 5. **Vérifications post-déploiement** :
 > 
 >    Une fois l'infrastructure déployée, vous pouvez vérifier que tout fonctionne correctement en utilisant Docker Compose pour lister les conteneurs en cours d'exécution :
