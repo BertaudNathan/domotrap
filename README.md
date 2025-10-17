@@ -57,10 +57,10 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 
 ## Technologies utilisées
 
-> DATA : SQL, Python, DAX (PowerBI)
-> IOT : C++, platformIO
-> Frontend : HTML, CSS, js
-> Backend : express.js, js
+> - DATA : SQL, Python, DAX (PowerBI)
+> - IOT : C++, platformIO
+> - Frontend : HTML, CSS, js
+> - Backend : express.js, js
 
 ## Architecture
 
