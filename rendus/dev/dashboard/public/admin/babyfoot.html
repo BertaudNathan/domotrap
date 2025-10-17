@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard · Détail babyfoot</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <a href="/admin/"><strong>Dashboard</strong></a>
+    <a href="/admin/babyfoots.html">Babyfoots</a>
+    <a href="/admin/users.html">Utilisateurs</a>
+    <form class="inline" style="margin-left:auto" method="post" action="/auth/logout">
+      <button class="btn btn--ghost">Déconnexion</button>
+    </form>
+  </nav>
+
+  <main class="container" id="root"></main>
+
+  <!-- Modale (sélection depuis le catalogue) -->
+  <div id="condModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="condTitle" aria-hidden="true">
+    <div class="modal__backdrop" onclick="closeCondModal()"></div>
+    <div class="modal__dialog">
+      <div class="modal__title" id="condTitle">Ajouter des conditions</div>
+      <div class="modal__desc">Sélectionnez des conditions à appliquer à cette table.</div>
+
+      <div class="mt-2">
+        <label>Catalogue</label>
+        <div id="catalogList" style="max-height:240px; overflow:auto; border:1px solid var(--c-line); border-radius: var(--radius-1); padding:8px;"></div>
+      </div>
+
+      <div class="modal__actions mt-2">
+        <button class="btn btn--ghost btn--sm" onclick="closeCondModal()">Annuler</button>
+        <button class="btn btn--ok btn--sm" onclick="applyPickedConditions()">Ajouter à la table</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function getIdFromUrl() {
+      const m = location.pathname.match(/\/admin\/tables\/([^\/?#]+)/i);
+      if (m && m[1]) return decodeURIComponent(m[1]);
+      const q = new URLSearchParams(location.search).get('id');
+      return q || null;
+    }
+    const id = getIdFromUrl();
+
+    let currentTable = null;
+    let catalog = [];
+    let picked = new Set();
+
+    if (!id) {
+      document.getElementById('root').innerHTML = '<h1>Babyfoot introuvable</h1>';
+    } else {
+      Promise.all([loadTable(), loadCatalog()]).then(render);
+    }
+
+    async function loadTable(){
+      const r = await fetch('/mock/babyfoots/' + encodeURIComponent(id));
+      if (r.status === 404) {
+        currentTable = null;
+        document.getElementById('root').innerHTML = '<h1>Babyfoot introuvable</h1>';
+      } else {
+        currentTable = await r.json();
+      }
+    }
+    async function loadCatalog(){
+      const r = await fetch('/mock/conditions');
+      catalog = await r.json();
+    }
+
+    function levelForLabel(label){
+      const c = catalog.find(x => x.label.toLowerCase() === String(label).toLowerCase());
+      if (c) return c.level;
+      const s = String(label).toLowerCase();
+      if (s.includes('good') || s.includes('new')) return 'OK';
+      if (s.includes('broken') || s.includes('missing') || s.includes('crack')) return 'ERROR';
+      return 'WARN';
+    }
+    function chipClassForLevel(level){
+      return level === 'OK' ? 'chip--ok' : level === 'ERROR' ? 'chip--error' : 'chip--warn';
+    }
+
+    function render(){
+      if (!currentTable) return;
+      const b = currentTable;
+
+      const badgeClass =
+        b.status === 'OK'   ? 'badge--ok' :
+        b.status === 'BUSY' ? 'badge--busy' : 'badge--down';
+      const last = b.lastActiveAt ? new Date(b.lastActiveAt).toLocaleString('fr-FR') : '—';
+
+      const byLevel = { OK: [], WARN: [], ERROR: [] };
+      (b.conditions || []).forEach(cond => {
+        const lvl = levelForLabel(cond);
+        byLevel[lvl].push(cond);
+      });
+      Object.keys(byLevel).forEach(k => byLevel[k].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'})));
+
+      const groupsHtml = `
+        ${groupHtml('OK (info)',       byLevel.OK,    'OK',    3)}
+        ${groupHtml('Avertissements',  byLevel.WARN,  'WARN',  3)}
+        ${groupHtml('Critiques',       byLevel.ERROR, 'ERROR', 3)}
+      `;
+
+      document.getElementById('root').innerHTML = `
+        <h1>${escapeHtml(b.name)}</h1>
+
+        <section class="grid-4">
+          <div class="card"><div class="card__label">État</div><div class="card__kpi"><span class="badge ${badgeClass}">${b.status}</span></div></div>
+          <div class="card"><div class="card__label">Lieu</div><div class="card__kpi" style="font-size:20px">${escapeHtml(b.location)}</div></div>
+          <div class="card"><div class="card__label">Dernière activité</div><div class="card__kpi" style="font-size:20px">${last}</div></div>
+          <!-- ✅ Carte Firmware supprimée -->
+        </section>
+
+        <section class="mt-4">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <h2 style="margin:0">Conditions / Dégâts</h2>
+            <button class="btn btn--sm" onclick="openCondModal()">Ajouter</button>
+          </div>
+          ${groupsHtml}
+        </section>
+
+        <section class="mt-4">
+          <h2>Actions rapides</h2>
+          <div class="form-row">
+            <button class="btn btn--ok"   onclick="setStatus('OK')">Marquer OK</button>
+            <button class="btn btn--busy" onclick="setStatus('BUSY')">Marquer Occupé</button>
+            <button class="btn btn--down" onclick="setStatus('DOWN')">Marquer HS</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function groupHtml(title, arr, level, wrapAfter = 3){
+      if (!arr || arr.length === 0) return '';
+      let html = '';
+      arr.forEach((cond, idx) => {
+        html += `
+          <span class="chip ${chipClassForLevel(level)}">
+            ${escapeHtml(cond)}
+            <button title="Retirer" onclick="removeCondition('${escapeAttr(cond)}')" style="margin-left:6px; border:none; background:transparent; color:var(--c-muted); cursor:pointer">×</button>
+          </span>
+        `;
+        if (idx === wrapAfter - 1 && arr.length > wrapAfter) {
+          html += `<span class="chip-break"></span>`;
+        }
+      });
+      return `
+        <div class="mt-2">
+          <div style="color:var(--c-muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px">${title} (${arr.length})</div>
+          <div class="chips">${html}</div>
+        </div>
+      `;
+    }
+
+    async function setStatus(next){
+      await fetch('/mock/babyfoots/' + encodeURIComponent(id), {
+        method: 'PATCH',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ status: next })
+      });
+      await loadTable();
+      render();
+    }
+
+    async function removeCondition(label){
+      await fetch('/mock/babyfoots/' + encodeURIComponent(id) + '/conditions', {
+        method: 'PATCH',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ remove: [label] })
+      });
+      await loadTable();
+      render();
+    }
+
+    function openCondModal(){
+      picked = new Set();
+      const existing = new Set((currentTable?.conditions || []).map(s => s.toLowerCase()));
+
+      // union du catalogue ET des conditions déjà présentes
+      const labelsSet = new Set(catalog.map(c => c.label));
+      (currentTable?.conditions || []).forEach(lbl => labelsSet.add(lbl));
+
+      const allLabels = Array.from(labelsSet);
+      const items = allLabels.map(lbl => ({ label: lbl, level: levelForLabel(lbl) }));
+
+      const ok    = items.filter(i => i.level === 'OK').map(i => i.label).sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}));
+      const warn  = items.filter(i => i.level === 'WARN').map(i => i.label).sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}));
+      const error = items.filter(i => i.level === 'ERROR').map(i => i.label).sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}));
+
+      const box = document.getElementById('catalogList');
+      box.innerHTML = `
+        ${catalogGroup('OK (info)', ok, existing)}
+        ${catalogGroup('Avertissements', warn, existing)}
+        ${catalogGroup('Critiques', error, existing)}
+      `;
+
+      const modal = document.getElementById('condModal');
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function catalogGroup(title, labels, existingSet){
+      if (!labels.length) return '';
+      const list = labels.map(lbl => {
+        const isChecked = existingSet.has(lbl.toLowerCase());
+        return `
+          <label style="display:flex; align-items:center; gap:8px; padding:6px 4px;">
+            <input type="checkbox" value="${escapeAttr(lbl)}" ${isChecked ? 'checked' : ''} onchange="togglePick(this)" />
+            <span class="chip ${chipClassForLevel(levelForLabel(lbl))}">${escapeHtml(lbl)}</span>
+          </label>
+        `;
+      }).join('');
+      return `
+        <div class="mt-2">
+          <div style="color:var(--c-muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px">${title} (${labels.length})</div>
+          ${list}
+        </div>
+      `;
+    }
+
+    function closeCondModal(){
+      const modal = document.getElementById('condModal');
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeCondModal(); });
+
+    function togglePick(input){
+      if (input.checked) picked.add(input.value);
+      else picked.delete(input.value);
+    }
+
+    async function applyPickedConditions(){
+      if (picked.size === 0) { closeCondModal(); return; }
+      const selectedLabels = Array.from(picked);
+      await fetch('/mock/babyfoots/' + encodeURIComponent(id) + '/conditions', {
+        method: 'PATCH',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ add: selectedLabels })
+      });
+      closeCondModal();
+      await loadTable();
+      render();
+    }
+
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    function escapeAttr(s){ return escapeHtml(s).replace(/"/g, '&quot;'); }
+  </script>
+</body>
+</html>
