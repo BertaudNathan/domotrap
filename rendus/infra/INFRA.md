@@ -30,3 +30,10 @@ Autrement, il n'y a pas de format imposé, mais essayez de rester clair et conci
 En conclusion, cela doit résumer votre travail en tant qu'expert.e infra, et vous permettre de garder un trace écrite de votre contribution au projet.
 
 Merci de votre participation, et bon courage pour la suite du hackathon !
+
+
+# RENDU FINAL 
+
+Le rendu final est le fichier [INFRA.docx](INFRA.docx). Il contient toute la documentation demandé ainsi que les captures d'écran justificatives.
+
+Merci et bonne lecture !
