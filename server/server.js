@@ -571,6 +571,154 @@ app.get("/leaderboard", (req, res) => {
   });
 });
 
+// Attribution automatique des buts aux attaquants
+app.post("/auto-assign-goals/:matchId", (req, res) => {
+  const matchId = req.params.matchId;
+
+  // 1. Récupérer le score du match
+  const matchSql = `SELECT match_final_score_red, match_final_score_blue FROM match_ WHERE Id_match = ?`;
+
+  db.get(matchSql, [matchId], (err, match) => {
+    if (err || !match) {
+      return res.status(404).json({ message: "Match introuvable" });
+    }
+
+    const { match_final_score_red, match_final_score_blue } = match;
+
+    // 2. Récupérer les joueurs qui ont joué ce match
+    const playerSql = `
+      SELECT player_id, role, team_color FROM play 
+      WHERE Id_match = ? AND role = 'attack'
+    `;
+
+    db.all(playerSql, [matchId], (err, attackers) => {
+      if (err) {
+        return res.status(500).json({
+          message: "Erreur en récupérant les attaquants",
+          error: err.message,
+        });
+      }
+
+      let updates = [];
+
+      attackers.forEach((player) => {
+        let goals = 0;
+        if (player.team_color === "red") goals = match_final_score_red;
+        if (player.team_color === "blue") goals = match_final_score_blue;
+
+        const updateSql = `
+          UPDATE play SET goal = ? 
+          WHERE Id_match = ? AND player_id = ?
+        `;
+
+        updates.push(
+          new Promise((resolve, reject) => {
+            db.run(
+              updateSql,
+              [goals, matchId, player.player_id],
+              function (err) {
+                if (err) reject(err);
+                else resolve();
+              }
+            );
+          })
+        );
+      });
+
+      Promise.all(updates)
+        .then(() => {
+          res
+            .status(200)
+            .json({ message: "Buts attribués automatiquement aux attaquants" });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            message: "Erreur lors de la mise à jour des buts",
+            error: err.message,
+          });
+        });
+    });
+  });
+});
+
+//render match duration
+app.patch("/match/:id/duration", (req, res) => {
+  const matchId = req.params.id;
+  const { duration } = req.body;
+
+  if (duration === undefined || typeof duration !== "number") {
+    return res.status(400).json({ message: "Durée invalide ou manquante" });
+  }
+
+  const sql = `UPDATE match_ SET match_duration = ? WHERE Id_match = ?`;
+
+  db.run(sql, [duration, matchId], function (err) {
+    if (err) {
+      return res.status(500).json({
+        message: "Erreur lors de la mise à jour de la durée",
+        error: err.message,
+      });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ message: "Match non trouvé" });
+    }
+
+    res.status(200).json({ message: "Durée du match mise à jour avec succès" });
+  });
+});
+
+app.post("/match/:id/duration", (req, res) => {
+  const matchId = req.params.id;
+  const { duration } = req.body;
+
+  if (duration === undefined || typeof duration !== "number") {
+    return res.status(400).json({ message: "Durée manquante ou invalide" });
+  }
+
+  const sql = `UPDATE match_ SET match_duration = ? WHERE Id_match = ?`;
+
+  db.run(sql, [duration, matchId], function (err) {
+    if (err) {
+      return res.status(500).json({
+        message: "Erreur lors de l'enregistrement de la durée",
+        error: err.message,
+      });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ message: "Match non trouvé" });
+    }
+
+    res.status(200).json({ message: "Durée enregistrée avec succès" });
+  });
+});
+
+//recupérer la durée
+app.get("/match/:id/duration", (req, res) => {
+  const matchId = req.params.id;
+
+  const sql = `SELECT match_duration FROM match_ WHERE Id_match = ?`;
+
+  db.get(sql, [matchId], (err, row) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Erreur lors de la récupération de la durée",
+        error: err.message,
+      });
+    }
+
+    if (!row) {
+      return res.status(404).json({ message: "Match non trouvé" });
+    }
+
+    res.status(200).json({
+      match_id: matchId,
+      duration: row.match_duration,
+    });
+  });
+});
+
 app.listen(port, () => {
   console.log("Server app listening on port " + port);
 });
