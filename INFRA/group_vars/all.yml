@@ -14,6 +14,8 @@ db_init_image: "alpine:3.20"       # pour initialiser sqlite
 
 # DB (sqlite)
 sqlite_db_path: "{{ data_dir }}/babyfoot.db"
+sqlite_schema_dir: "{{ app_root }}/db"
+sqlite_schema_file: "script_db.sql"     # <- ton fichier
 
 # Sauvegarde
 backup_dir: "{{ app_root }}/backups"
