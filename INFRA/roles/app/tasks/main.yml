@@ -45,12 +45,6 @@
     dest: "{{ app_root }}/docker-compose.yml"
     mode: "0644"
 
-
-- name: Ensure community.docker is installed
-  ansible.builtin.meta: require_collection
-  collections:
-    - community.docker
-
 - name: Start application stack with Compose v2
   community.docker.docker_compose:
     project_src: "{{ app_root }}"
