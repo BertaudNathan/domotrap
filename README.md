@@ -61,6 +61,40 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 
 ## Architecture
 
+<img src="ressources/schema_architecture.png" alt="Schéma d'architecture" width="100%"/>
+
+> ## 1. Babyfoot (Partie matérielle)
+>
+> Le babyfoot intègre deux **capteurs ultrason** connectés par fil à une **carte Arduino ESP32**.  
+> Les capteurs détectent le passage de la balle pour identifier les buts.  
+> L’ESP32 lit ces données et envoie une requête **API HTTP** vers le serveur hébergé sur le **Raspberry Pi**.
+>
+> ## 2. Raspberry Pi (Partie serveur)
+>
+> Le **Raspberry Pi** exécute plusieurs **conteneurs Docker** :
+> - **Back-end (Node.js)** : reçoit les données de l’ESP32, les traite et les enregistre.  
+> - **Base de données (SQLite)** : stocke les informations de jeu (buts, temps, scores).  
+> - **Front-end (HTML/CSS/JavaScript)** : affiche les données et interagit avec le back-end via une **API REST**.  
+>
+> Le back-end communique avec la base SQLite via des requêtes **SQL**,  
+> et utilise une **API REST** pour communiquer avec le front-end.
+>
+> ## 3. Interface Web (Front-end)
+>
+> Le **front-end**, exécuté dans un **conteneur Docker**, est développé en **HTML, CSS et JavaScript**.  
+> Il interroge régulièrement l’API du back-end pour récupérer les dernières données (scores, statistiques, etc.).  
+> Les informations sont ensuite affichées sur une interface web accessible depuis un navigateur.
+>
+> ## 4. Flux global de données
+>
+> 1. Les **capteurs ultrason** détectent le passage de la balle.  
+> 2. L’**ESP32** envoie une requête **API HTTP** au **back-end** du Raspberry Pi.  
+> 3. Le **back-end** enregistre l’événement dans la **base SQLite**.  
+> 4. Le **front-end** (dans son conteneur Docker) interroge l’API du back-end.  
+> 5. Les informations (scores, statistiques, etc.) sont affichées en temps réel sur l’interface web.
+
+
+
 ## Guide de déploiement
 
 > Expliquez comment déployer votre application **EN MOINS DE LIGNES DE COMMANDE POSSIBLES**. Docker, Ansible, Terraform, Scripts Shell... Le but est de pouvoir déployer votre application en une seule commande ou presque.
