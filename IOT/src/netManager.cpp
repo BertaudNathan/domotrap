@@ -162,19 +162,20 @@ void NetManager::initMatch()
     client.stop();
 }
 
-bool NetManager::sendGoalEvent(int team)
+bool NetManager::sendGoalEvent(Team team)
 {
+    String teamStr = (team == Team::RED) ? "red" : "blue";
     if (!isConnected())
     {
         Serial.println("WiFi non connecté");
         return false;
     }
 
-    Serial.println("Envoi de l’événement pour l’équipe: " + String(team));
+    Serial.println("Envoi de l’événement pour l’équipe: " + String(teamStr));
 
     if (_client.connect(_serverUrl, _serverPort))
     {
-        String postData = "team=" + String(team);
+        String postData = "team=" + String(teamStr);
 
         _client.println("POST /goal HTTP/1.1");
         _client.println(String("Host: ") + _serverUrl);

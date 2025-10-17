@@ -3,14 +3,18 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
+#include "teamEnum.h"
 
 class NetManager {
+
+      
 public:
     NetManager(const char* ssid, const char* password, const char* serverUrl = "192.168.237.45", int serverPort = 8080);
     void connect();
     bool isConnected();
-    bool sendGoalEvent(int team);
+    bool sendGoalEvent(Team team);
     bool updateConnection();
+
     void initMatch();
     String listen();
 
