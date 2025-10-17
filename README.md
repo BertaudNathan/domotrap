@@ -143,6 +143,7 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 >    
 >    Après cela vous devriez avoir les dépendances qui s'installent et le playbook qui se lance avec toutes les tâches (TASK) : 
 
+<img src="ressources/deploy_ansible.png" alt="Deploy CLI" width="100%"/>
 
 > 
 > 4. **Explication du script `deploy.sh`** :
