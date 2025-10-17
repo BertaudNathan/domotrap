@@ -57,7 +57,7 @@ Le code lié à l’insertion et au déploiement Docker est disponible dans le d
 
 ## Mise en place de la BD
 
-En parallèle, nous avons mis en place une base de données robuste. Toutes les spécifications et la documentation se trouvent dans le fichier [db_sql/documentation.md](db_sql/documentation.md).
+En parallèle, nous avons mis en place une base de données robuste. Toutes les spécifications et la documentation se trouvent dans le fichier [../db_sql/documentation.md](db_sql/documentation.md).
 Niveau technologie nous nous sommes tournés aussi sur SQLite pour la légereté du SGBD qui tournera sur le raspberry avec les spécifications données par l'équipe infra et la connaissance SQL du groupe entier, surtout de la part des dévs.
 
 
