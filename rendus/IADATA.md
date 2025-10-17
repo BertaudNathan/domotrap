@@ -40,13 +40,13 @@ Le traitement des données a été effectué initialement avec OpenRefine. Nous 
 ----> tu peux ajouter la partie python charly
 
 > ### Clustering
-> <img src="DATA/images/cluster_text.png" alt="Schéma d'architecture" width="100%"/>
+> <img src="../ressources/cluster_text.png" alt="Schéma d'architecture" width="100%"/>
 >
 > ### Analyse des textes et transformation
-> <img src="DATA/images/analyse_transformation_text.png" alt="Schéma d'architecture" width="100%"/>
+> <img src="../ressources/analyse_transformation_text.png" alt="Schéma d'architecture" width="100%"/>
 >
 > ### Uniformisation des dates
-> <img src="DATA/images/transform_date.png" alt="Schéma d'architecture" width="100%"/>
+> <img src="../ressources/transform_date.png" alt="Schéma d'architecture" width="100%"/>
 
 
 ## Analyse

@@ -64,6 +64,6 @@ Table d'association entre matchs et joueurs (statistiques de participation).
 
 ## MCD
 
-![MCD — Modèle conceptuel de données](../DATA/images/MCD.png)
+![MCD — Modèle conceptuel de données](../ressources/MCD.png)
 
 *Figure : MCD du schéma de la base "babyfoot"*
