@@ -37,8 +37,17 @@ Merci de votre participation, et bon courage pour la suite du hackathon !
 
 Le traitement des données a été effectué initialement avec OpenRefine. Nous avons utilisé la fonction de clustering pour identifier les textes semblables et fusionner les variantes orthographiques (ex. "bleu", "blu", "blue"), ce qui a permis de normaliser les valeurs. Grâce à OpenRefine, nous avons aussi analysé l'ensemble des textes d'une colonne et effectué des remplacements massifs (ex. convertir des évaluations représentées par 3 emojis étoile en la valeur numérique 3, visualisation rapide des problèmes d'encodage sur les colonnes avec un nombre défini de string précis). Enfin, nous avons uniformisé rapidement les formats de date (parsing et mise au même format ISO).
 
-----> tu peux ajouter la partie python charly
 
+En complément, un nettoyage approfondi a été réalisé en Python avec Pandas.
+Ce processus a permis de traiter les incohérences laissées après OpenRefine et d’automatiser plusieurs étapes clés :
+
+- Suppression des doublons et normalisation des colonnes de durée (ex. "2 min 30" → 150 secondes).
+
+- Parsing automatique des scores pour corriger les formats irréguliers (ex. "5–10" ou "5 - 10"), avec conversion en valeurs entières et ajout d’une colonne winner calculée à partir des scores.
+
+- Uniformisation des dates, incluant la détection et l’exclusion des dates non plausibles (avant 2010 ou dans le futur), puis l’extraction de l’année, du mois et du jour pour les analyses temporelles.
+
+Standardisation des champs logiques, comme la conversion de is_substitute en booléen (True/False) afin d’unifier les types.
 > ### Clustering
 > <img src="../ressources/cluster_text.png" alt="Schéma d'architecture" width="100%"/>
 >
